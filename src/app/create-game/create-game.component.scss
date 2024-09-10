@@ -1,0 +1,56 @@
+@import '../../styles.scss';
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+    
+    .name-create-game {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-width: 292px;
+
+        label {
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 19.6px;
+            color: $input-text-color; // Usando variable para el color del texto
+            font-family: 'Poppins', sans-serif;
+        }
+
+        input[type="text"] {
+            width: 292px;
+            padding: $input-padding;
+            border: 1px solid $border-color; // Usando variable para el borde
+            border-radius: 100px;
+            background-color: transparent;
+            color: $input-text-color; // Usando variable para el color del texto
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 19.6px;
+            text-align: center;
+            height: 40px;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+
+            &:focus {
+                outline: none;
+                border-color: $hover-shadow-color; // Usando variable para el color del borde al hacer focus
+            }
+
+            &:hover {
+                cursor: pointer;
+                box-shadow: 0 0 10px $hover-shadow-color; // Usando variable para la sombra en hover
+            }
+        }
+    }
+
+    button {
+        margin-top: 20px;
+        width: 100%;
+        @include button-styles($button-bg-color, $hover-color-button, $disabled-color); // Usando variables para el color del botón
+        max-width: 159px;
+    }
+}

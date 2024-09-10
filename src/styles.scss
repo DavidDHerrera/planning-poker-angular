@@ -1,1 +1,69 @@
 /* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+$primary-color: #330072;
+$secondary-color: rgba(31, 13, 63, 1.7);
+$white-transparent: rgba(255, 255, 255, 0.1);
+$border-radius: 25px;
+$input-padding: 4px 4px 4px 15px;
+$box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+$border-color: #BB65FF;
+$input-text-color: #FFFFFF;
+$button-bg-color: #F6F7FC;
+$disabled-color: rgba(255, 255, 255, 0.1);
+$hover-shadow-color: #ffffff;
+$text-color-disabled: #9D9DA199;
+$hover-color-button: rgba(255, 255, 255, 0.4);
+
+
+// Mixin para el gradiente de fondo
+@mixin gradient-bg($color1, $color2) {
+    background: radial-gradient(50% 50% at 50% 50%, $color1 0%, $color2 100%);
+}
+
+// Mixin para los botones
+@mixin button-styles($bg-color, $hover-color, $disabled-color) {
+    background-color: $bg-color;
+    border-radius: 50px;
+    padding: 16px 24px 16px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    color: $primary-color;
+    font-weight: 600;
+    line-height: 16px;
+    font-family: 'Poppins', sans-serif;
+
+
+    &:disabled {
+        background-color: $disabled-color;
+        cursor: not-allowed;
+        color: $text-color-disabled;
+    }
+
+    &:hover:not(:disabled) {
+        background-color: $bg-color;
+        box-shadow: 0 0 10px $hover-shadow-color;
+    }
+}
+
+app-root {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+app-create-game {
+    margin: auto;
+}
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    @include gradient-bg($primary-color, $secondary-color); // Usando variables para el gradiente
+}

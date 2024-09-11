@@ -14,7 +14,8 @@ $disabled-color: rgba(255, 255, 255, 0.1);
 $hover-shadow-color: #ffffff;
 $text-color-disabled: #9D9DA199;
 $hover-color-button: rgba(255, 255, 255, 0.4);
-
+$blue-zodiac: #1F0D3F;
+$radio-button-purple: #6429CD4D;
 
 // Mixin para el gradiente de fondo
 @mixin gradient-bg($color1, $color2) {
@@ -47,6 +48,33 @@ $hover-color-button: rgba(255, 255, 255, 0.4);
     }
 }
 
+@mixin input-styles($width) {
+    width: $width;
+    padding: $input-padding;
+    border: 1px solid $border-color; // Usando variable para el borde
+    border-radius: 100px;
+    background-color: transparent;
+    color: $input-text-color; // Usando variable para el color del texto
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 19.6px;
+    text-align: center;
+    height: 40px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  
+    &:focus {
+      outline: none;
+      border-color: $hover-shadow-color; // Usando variable para el color del borde al hacer focus
+    }
+  
+    &:hover {
+      cursor: pointer;
+      box-shadow: 0 0 10px $hover-shadow-color; // Usando variable para la sombra en hover
+    }
+  }
+  
+
 app-root {
     width: 100%;
     height: 100%;
@@ -54,7 +82,8 @@ app-root {
     flex-direction: column;
 }
 
-app-create-game {
+app-create-game,
+app-create-admin {
     margin: auto;
 }
 

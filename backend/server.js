@@ -96,6 +96,19 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('changeRole', ({ playerName, role, roomId }) => {
+    
+    if (rooms[roomId]) {
+      const player = rooms[roomId].players.find(p => p.playerName === playerName);
+      if (player) {
+        player.role = role;
+        console.log(`${playerName} cambió su rol a ${role} en la sala ${roomId}`);
+        io.to(roomId).emit('roleChanged', { playerName, role });
+      }
+    }
+  });
+
+
   // Reiniciar la votación
   // Reiniciar la votación en el servidor
   socket.on('restartVoting', (roomId) => {

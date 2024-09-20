@@ -54,6 +54,21 @@ export class GameTableComponent implements OnInit {
       this.distributePlayers();
     });
 
+    this.socket.on('roleChanged', (data: any) => {
+      const player = this.allPlayers.find(p => p.name === data.playerName);
+      if (player) {
+        player.role = data.role;
+        
+        // Si el jugador actual cambia su rol
+        if (player.name === this.playerName) {
+          this.isSpectator = data.role === 'espectador';
+        }
+    
+        this.distributePlayers();
+      }
+    });
+    
+
     this.socket.on('cardSelected', (data: any) => {
       console.log(data);
       const player = this.allPlayers.find(p => p.name === data.playerName);

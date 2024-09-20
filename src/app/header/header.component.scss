@@ -116,3 +116,35 @@
         }
     }
 }
+  
+.content-player-initials {
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 15px;
+    
+    svg {
+        color: $input-text-color;
+    }
+}
+  .dropdown-menu {
+    position: absolute;
+    background-color: $blue-zodiac;
+    border: 1px solid $hover-shadow-color;
+    padding: 10px;
+    z-index: 1;
+    top: 10%;
+    right: 19%;
+  }
+  
+  .spectator-toggle {
+    display: flex;
+    align-items: center;
+  }
+  
+  .spectator-toggle input[type="checkbox"] {
+    margin-right: 10px;
+  }
+  

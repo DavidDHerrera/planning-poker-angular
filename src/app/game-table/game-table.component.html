@@ -1,77 +1,29 @@
 <body class="content-table">
-    <!-- Si el usuario es espectador -->
-    <div *ngIf="isSpectator" class="player-info">
-        <div class="players-container">
-            <div class="table-top">
-                <div *ngFor="let player of playersTop" class="player only">
-                    <div class="card"></div>
-                    <span class="player-name text">{{ player.name }}</span>
-                </div>
-            </div>
-
-            <div class="table-left">
-                <div *ngFor="let player of playersLeft" class="player only">
-                    <div class="card"></div>
-                    <span class="player-name text">{{ player.name }}</span>
-                </div>
-            </div>
-
-            <div class="neon-shape table">
-            </div>
-
-            <div class="table-right">
-                <div *ngFor="let player of playersRight" class="player only">
-                    <div class="card"></div>
-                    <span class="player-name text">{{ player.name }}</span>
-                </div>
-            </div>
-
-            <div class="table-bottom">
-                <!-- Primera mitad de los jugadores en la parte inferior -->
-                <div *ngFor="let player of playersBottom.slice(0, playersBottom.length / 2)" class="player only">
-                    <div class="card"></div>
-                    <span class="player-name text">{{ player.name }}</span>
-                </div>
-
-                <!-- Jugador actual, centrado en la parte inferior -->
-                <div class="player player-current centered">
-                    <div class="player-initials">
-                        <span>{{ playerInitials }}</span>
-                    </div>
-                    <div class="player-name text">
-                        <span>{{ playerName }}</span>
-                    </div>
-                </div>
-                <div *ngFor="let player of playersBottom.slice(playersBottom.length / 2)" class="player only">
-                    <div class="card"></div>
-                    <span class="player-name text ">{{ player.name }}</span>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
     <!-- Si el usuario es jugador -->
-    <div *ngIf="!isSpectator" class="player-cards">
+    <div class="player-cards">
         <div class="players-container">
             <div class="table-top">
                 <div *ngFor="let player of playersTop" class="player only">
-                    <div class="card" [class.selected]="player.selectedCard" [class.revealed]="cardsRevealed">
-                        <!-- Mostrar la carta seleccionada si las cartas están reveladas -->
+                    <!-- Mostrar las iniciales si el jugador es un espectador -->
+                    <div *ngIf="player.role === 'espectador'" class="player-initials">
+                        <span>{{ getInitials(player.name) }}</span>
+                    </div>
+                    <!-- Mostrar la carta seleccionada si es un jugador -->
+                    <div *ngIf="player.role === 'jugador'" class="card" [class.selected]="player.selectedCard" [class.revealed]="cardsRevealed">
                         {{ cardsRevealed ? player.selectedCard : '' }}
                     </div>
-
                     <span class="player-name text">{{ player.name }}</span>
                 </div>
             </div>
 
             <div class="table-left">
                 <div *ngFor="let player of playersLeft" class="player only">
-                    <div class="card" [class.selected]="player.selectedCard" [class.revealed]="cardsRevealed">
-                        <!-- Mostrar la carta seleccionada si las cartas están reveladas -->
+                    <div *ngIf="player.role === 'espectador'" class="player-initials">
+                        <span>{{ getInitials(player.name) }}</span>
+                    </div>
+                    <div *ngIf="player.role === 'jugador'" class="card" [class.selected]="player.selectedCard" [class.revealed]="cardsRevealed">
                         {{ cardsRevealed ? player.selectedCard : '' }}
                     </div>
-
                     <span class="player-name text">{{ player.name }}</span>
                 </div>
             </div>
@@ -85,33 +37,33 @@
 
             <div class="table-right">
                 <div *ngFor="let player of playersRight" class="player only">
-                    <div class="card" [class.selected]="player.selectedCard" [class.revealed]="cardsRevealed">
-                        <!-- Mostrar la carta seleccionada si las cartas están reveladas -->
+                    <div *ngIf="player.role === 'espectador'" class="player-initials">
+                        <span>{{ getInitials(player.name) }}</span>
+                    </div>
+                    <div *ngIf="player.role === 'jugador'" class="card" [class.selected]="player.selectedCard" [class.revealed]="cardsRevealed">
                         {{ cardsRevealed ? player.selectedCard : '' }}
                     </div>
-
                     <span class="player-name text">{{ player.name }}</span>
                 </div>
             </div>
 
             <div class="table-bottom">
                 <div *ngFor="let player of playersBottom" class="player only">
-                    <div class="card" [class.selected]="player.selectedCard" [class.revealed]="cardsRevealed">
-                        <!-- Mostrar la carta seleccionada si las cartas están reveladas -->
+                    <div *ngIf="player.role === 'espectador'" class="player-initials">
+                        <span>{{ getInitials(player.name) }}</span>
+                    </div>
+                    <div *ngIf="player.role === 'jugador'" class="card" [class.selected]="player.selectedCard" [class.revealed]="cardsRevealed">
                         {{ cardsRevealed ? player.selectedCard : '' }}
                     </div>
-
                     <span class="player-name text">{{ player.name }}</span>
                 </div>
             </div>
         </div>
 
-
-        <div class="content-cards-select" *ngIf="!cardsRevealed">
+        <div class="content-cards-select" *ngIf="!cardsRevealed && !isSpectator">
             <h5>Elige una carta 👇</h5>
             <div class="cards-container">
-                <button *ngFor="let card of cards" (click)="selectCard(card)" [class.selected]="isSelected(card)"
-                    class="card">
+                <button *ngFor="let card of cards" (click)="selectCard(card)" [class.selected]="isSelected(card)" class="card">
                     {{ card }}
                 </button>
             </div>
@@ -120,7 +72,7 @@
         <!-- Sección de cartas reveladas -->
         <div *ngIf="cardsRevealed" class="results">
             <div class="selected-cards">
-                <div *ngFor="let card of groupedSelectedCards" >
+                <div *ngFor="let card of groupedSelectedCards">
                     <div class="card">
                         <span>{{ card.cardValue }}</span>
                     </div>
@@ -132,6 +84,5 @@
                 <span class="text average-number">{{ average | number: '1.1-1' }}</span>
             </div>
         </div>
-
     </div>
 </body>

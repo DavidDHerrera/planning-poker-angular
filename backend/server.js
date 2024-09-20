@@ -89,7 +89,7 @@ io.on('connection', (socket) => {
         playerName: player.playerName,
         selectedCard: player.selectedCard // La carta seleccionada por cada jugador
       }));
-  
+
       // Emitir las cartas reveladas a todos los jugadores de la sala
       io.to(roomId).emit('cardsRevealed', playerCards);
       room.revealed = true; // Marcar que las cartas han sido reveladas
@@ -97,17 +97,18 @@ io.on('connection', (socket) => {
   });
 
   // Reiniciar la votación
+  // Reiniciar la votación en el servidor
   socket.on('restartVoting', (roomId) => {
-    const room = rooms[roomId];
-    if (room) {
-      // Restablecer las cartas seleccionadas
-      room.players.forEach(player => player.selectedCard = null);
-      room.revealed = false; // Marcar que las cartas no están reveladas
+    if (rooms[roomId]) {
+      // Reiniciar las cartas seleccionadas de todos los jugadores en la sala
+      rooms[roomId].players.forEach(player => player.selectedCard = null);
 
-      // Emitir evento para reiniciar la votación a todos los jugadores de la sala
+      // Emitir el evento de reinicio solo una vez a todos los jugadores de la sala
       io.to(roomId).emit('restartVoting');
+      console.log(`Votación reiniciada para la sala ${roomId}`);
     }
   });
+
 
   // Cuando un usuario se desconecta
   socket.on('disconnect', () => {

@@ -69,7 +69,12 @@ export class GameTableComponent implements OnInit {
     });
 
     this.socket.on('restartVoting', () => {
-      this.restartVoting();
+      this.selectedCard = null;
+      this.allPlayers.forEach(player => player.selectedCard = null);
+      this.cardsRevealed = false;
+      this.isVotingActive = true;
+      this.revealedCardsSummary = [];
+      this.averageVote = null;
     });
   }
 
@@ -120,14 +125,22 @@ export class GameTableComponent implements OnInit {
   }
 
   restartVoting() {
-    this.selectedCard = null;
-    this.allPlayers.forEach(player => player.selectedCard = null);
-    this.cardsRevealed = false;
-    this.isVotingActive = true;
-    this.revealedCardsSummary = [];
-    this.averageVote = null;
-    this.socket.emit('restartVoting', this.roomId);
+    // Solo el administrador debe emitir este evento
+    if (this.isAdminUser()) {
+      this.selectedCard = null;
+      this.allPlayers.forEach(player => player.selectedCard = null);
+      this.cardsRevealed = false;
+      this.isVotingActive = true;
+      this.revealedCardsSummary = [];
+      this.averageVote = null;
+
+      // Emitir el evento de reinicio al servidor solo si es el administrador
+      this.socket.emit('restartVoting', this.roomId);
+    }
   }
+
+
+
 
   groupedSelectedCards: { cardValue: string, voteCount: number }[] = [];
   average: number = 0;

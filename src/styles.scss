@@ -16,7 +16,12 @@ $text-color-disabled: #9D9DA199;
 $hover-color-button: rgba(255, 255, 255, 0.4);
 $blue-zodiac: #1F0D3F;
 $radio-button-purple: #6429CD4D;
-
+$lavender-blue: #BDBDFF;
+$purple-heart: #6429CD;
+$pale-periwinkle: #BDBDFF99;
+$color-mauve: #E4A4FF;
+$color-vivid-violet: #9610FF;
+ 
 // Mixin para el gradiente de fondo
 @mixin gradient-bg($color1, $color2) {
     background: radial-gradient(50% 50% at 50% 50%, $color1 0%, $color2 100%);
@@ -44,7 +49,7 @@ $radio-button-purple: #6429CD4D;
 
     &:hover:not(:disabled) {
         background-color: $bg-color;
-        box-shadow: 0 0 10px $hover-shadow-color;
+        box-shadow: 0 0 10px $hover-color;
     }
 }
 
@@ -62,18 +67,18 @@ $radio-button-purple: #6429CD4D;
     height: 40px;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
-  
+
     &:focus {
-      outline: none;
-      border-color: $hover-shadow-color; // Usando variable para el color del borde al hacer focus
+        outline: none;
+        border-color: $hover-shadow-color; // Usando variable para el color del borde al hacer focus
     }
-  
+
     &:hover {
-      cursor: pointer;
-      box-shadow: 0 0 10px $hover-shadow-color; // Usando variable para la sombra en hover
+        cursor: pointer;
+        box-shadow: 0 0 10px $hover-shadow-color; // Usando variable para la sombra en hover
     }
-  }
-  
+}
+
 
 app-root {
     width: 100%;
@@ -95,4 +100,25 @@ body {
     align-items: center;
     height: 100vh;
     @include gradient-bg($primary-color, $secondary-color); // Usando variables para el gradiente
+
+    .player-initials {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: $lavender-blue;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        color: $primary-color;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: 'Poppins', sans-serif;
+        text-transform: uppercase;
+    }
+
+    .text {
+        font-size: 14px;
+        font-weight: 400;
+        color: $input-text-color;
+    }
 }

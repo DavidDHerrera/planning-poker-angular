@@ -1,0 +1,25 @@
+<div class="create-admin-container">
+    <form [formGroup]="playerForm" (ngSubmit)="onSubmit()" class="form-container">
+      <div class="name-admin">
+        <label for="admin-name">Tu nombre</label>
+        <input id="admin-name" type="text" formControlName="playerName" />
+      </div>
+      <div class="mode-selection">
+        <div class="radio-container">
+          <label class="text">
+            <input type="radio" id="jugador" value="jugador" formControlName="mode">
+            <span class="custom-radio text"></span> Jugador
+          </label>
+        </div>
+  
+        <div class="radio-container">
+          <label class="text">
+            <input type="radio" id="espectador" value="espectador" formControlName="mode">
+            <span class="custom-radio"></span> Espectador
+          </label>
+        </div>
+      </div>
+  
+      <button type="submit" [disabled]="playerForm.invalid">Continuar</button>
+    </form>
+  </div>

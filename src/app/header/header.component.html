@@ -1,4 +1,39 @@
-<div class="header">
-    <img src="../../assets/images/ficha-de-poker.png" alt="Logo" class="logo">
+<div [ngClass]="{'header': true, 'table-header': isGameTablePage}">
+  <img src="../../assets/images/ficha-de-poker.png" alt="Logo" class="logo">
+
+  <!-- Si estamos en la página de game-table, mostramos el nombre de la partida e iniciales -->
+  <ng-container *ngIf="showGameTableInfo; else defaultHeader">
+    <h1>{{ gameName }}</h1>
+    <div class="header-right">
+      <div class="player-initials">
+        <span>{{ playerInitials }}</span>
+      </div>
+      <button (click)="openInviteModal()" class="header-invite">Invitar jugadores</button>
+    </div>
+  </ng-container>
+
+  <div *ngIf="showInviteModal" class="modal">
+    <div class="modal-content">
+      <div class="title-modal">
+        <h2 class="text">Invitar jugadores</h2>
+        <button class="close" (click)="closeInviteModal()"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.66683 3.66602L18.3335 18.3327" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M18.3335 3.66602L3.66683 18.3327" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="invite-link-container">
+        <input type="text" class="text" [value]="inviteLink" readonly />
+        <button (click)="copyLink()">Copiar link</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Template por defecto para las demás páginas -->
+  <ng-template #defaultHeader>
     <h1>Crear partida</h1>
+  </ng-template>
 </div>

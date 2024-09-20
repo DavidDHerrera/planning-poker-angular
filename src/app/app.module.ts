@@ -10,17 +10,21 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { gameReducer } from './store/game.reducer';
+import { GameTableComponent } from './game-table/game-table.component';
+import { JoinRoomComponent } from './join-room/join-room.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HeaderComponent
+    HeaderComponent,
+    GameTableComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     CreateGameComponent,
     CreateAdminComponent,
+    JoinRoomComponent,
     StoreModule.forRoot({}, {}),
     EffectsModule.forRoot([]),
     StoreModule.forRoot({ gameName: gameReducer }),

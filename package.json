@@ -21,7 +21,9 @@
     "@ngrx/effects": "^15.4.0",
     "@ngrx/store": "^15.4.0",
     "@ngrx/store-devtools": "^15.4.0",
+    "ngx-socket-io": "^4.7.0",
     "rxjs": "~7.5.0",
+    "socket.io-client": "^4.7.5",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
   },

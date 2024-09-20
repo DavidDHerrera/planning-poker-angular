@@ -1,0 +1,224 @@
+@import '../../styles.scss';
+
+.neon-shape {
+    width: 603px;
+    height: 345px;
+    border-radius: 276px;
+    position: relative;
+    border: 2px solid $purple-heart;
+    box-sizing: border-box;
+    grid-area: table;
+
+    button.reveal-cards {
+        @include button-styles($purple-heart, $purple-heart, $disabled-color);
+        position: relative;
+        top: 44%;
+        left: 37%;
+        color: $input-text-color;
+        cursor: pointer;
+        z-index: 1;
+        padding: 12px 24px;
+    }
+}
+
+.neon-shape::before,
+.neon-shape::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+}
+
+.neon-shape::before {
+    width: 555px;
+    height: 298px;
+    border-radius: 276px;
+    border: 2px solid $pale-periwinkle;
+
+}
+
+.neon-shape::after {
+    width: 521px;
+    height: 272px;
+    border-radius: 276px;
+    border: 2px solid $purple-heart;
+}
+
+.content-table {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+}
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 5px;
+}
+
+.player-cards,
+.player-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .cards-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .card {
+        width: 48px;
+        height: 80px;
+        background-color: transparent;
+        border: 1px solid $border-color;
+        border-radius: 7px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: $input-text-color;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 16px;
+        transition: transform 0.3s;
+        padding: 10px;
+        box-sizing: border-box;
+
+        &:hover {
+            transform: scale(1.1);
+        }
+
+        &.selected {
+            background-color: $color-mauve;
+            color: $primary-color;
+        }
+    }
+
+    .player {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .cards-container.only,
+    .player.only {
+        flex-direction: column;
+        align-items: center;
+
+        .card {
+            width: 35px;
+            height: 60px;
+            cursor: default;
+
+            &:hover {
+                transform: none;
+            }
+        }
+    }
+
+    .player-initials {
+        width: 56px;
+        height: 56px;
+        font-size: 21px;
+    }
+
+    .content-cards-select {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .selected-cards {
+        display: flex;
+        gap: 30px;
+
+        .votes.text {
+            font-size: 16px;
+        }
+    }
+}
+
+h5 {
+    color: $input-text-color;
+    font-size: 21px;
+    line-height: 21px;
+    font-weight: 600;
+}
+
+.players-container {
+    grid-gap: .8rem;
+    display: inline-grid;
+    grid-template-areas:
+        "left top right"
+        "left table right"
+        "left bottom right";
+    grid-template-columns: 10.4rem 1fr 10.4rem;
+    grid-template-rows: auto 1fr auto;
+    margin: 0 auto;
+    min-height: 200px;
+    width: auto;
+
+    .table-bottom,
+    .table-top {
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+    }
+
+    .table-left,
+    .table-right {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .table-top {
+        align-items: stretch;
+        grid-area: top;
+    }
+
+    .table-left {
+        grid-area: left;
+        
+    }
+
+    .table-right {
+        grid-area: right;
+    }
+
+    .table-bottom {
+        align-items: center;
+        grid-area: bottom;
+    }
+}
+
+.results {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    gap: 109px;
+    width: 500px;
+    justify-content: flex-end;
+
+    .average {
+        display: flex;
+        flex-direction: column;
+
+        .average-number {
+            font-size: 36px;
+            font-weight: 700;
+        }
+    }
+}
+
+.card.selected {
+    /* Estilo para la carta seleccionada (ej: cambio de color de fondo) */
+    background-color: #4CAF50; /* Ejemplo: color verde cuando está seleccionada */
+    border: 2px solid #fff;
+  }

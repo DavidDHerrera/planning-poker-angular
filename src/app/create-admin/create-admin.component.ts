@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { AppState } from '../store/app.state';  // Asegúrate de importar tu AppState
 import { setUserRole } from '../store/game.actions';  // Acción para actualizar el rol del usuario
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-admin',
@@ -15,7 +16,7 @@ import { setUserRole } from '../store/game.actions';  // Acción para actualizar
 export class CreateAdminComponent {
   adminForm!: FormGroup;
 
-  constructor(private fb: FormBuilder, private store: Store<AppState>) {
+  constructor(private fb: FormBuilder, private store: Store<AppState>, private router: Router) {
     this.adminForm = this.fb.group({
       adminName: ['', [
         Validators.required,
@@ -60,6 +61,10 @@ export class CreateAdminComponent {
       this.store.dispatch(setUserRole({ role: selectedRole }));
 
       console.log('Usuario administrador creado con nombre:', adminName, 'y rol:', selectedRole);
+      const roomId = localStorage.getItem('roomId');
+      // Redirigir a la página de la mesa
+      this.router.navigate([`/game-table/${roomId}`]);
     }
   }
+
 }

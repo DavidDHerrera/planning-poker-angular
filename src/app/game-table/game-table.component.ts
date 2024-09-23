@@ -1,10 +1,34 @@
-import { Component, OnInit } from '@angular/core';
-import { io } from 'socket.io-client';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { io, Socket } from 'socket.io-client';
 
 interface Player {
   name: string;
-  role: string;
+  role: 'jugador' | 'espectador';
+  roleAdmin: 'admin' | 'jugador';
   selectedCard: string | null;
+}
+
+interface RoomDetails {
+  players: {
+    playerName: string;
+    role: 'jugador' | 'espectador';
+    roleAdmin: 'admin' | 'jugador';
+  }[];
+}
+
+interface RoleChangeData {
+  playerName: string;
+  role: 'jugador' | 'espectador';
+}
+
+interface AdminChangeData {
+  playerName: string;
+  roleAdmin: 'admin' | 'jugador';
+}
+
+interface CardSelectionData {
+  playerName: string;
+  card: string;
 }
 
 @Component({
@@ -12,29 +36,32 @@ interface Player {
   templateUrl: './game-table.component.html',
   styleUrls: ['./game-table.component.scss']
 })
-export class GameTableComponent implements OnInit {
+export class GameTableComponent implements OnInit, OnDestroy {
   playerName: string = '';
   playerInitials: string = '';
-  userRole: string = '';
+  userRole: 'jugador' | 'espectador' = 'jugador';
   isSpectator: boolean = false;
   cards: string[] = ['0', '1', '3', '5', '8', '13', '21', '34', '55', '89', '?', '☕'];
   selectedCard: string | null = null;
-  socket: any;
+  socket!: Socket;
   roomId: string = '';
   playersTop: Player[] = [];
   playersLeft: Player[] = [];
   playersRight: Player[] = [];
   playersBottom: Player[] = [];
-  allPlayers: Player[] = []; // Lista dinámica de jugadores conectados
-  cardsRevealed: boolean = false; // Indica si las cartas están reveladas
-  isVotingActive: boolean = true; // Controla si la votación está activa
-  revealedCardsSummary: { card: string; count: number }[] = []; // Resumen de cartas y conteo de votos
-  averageVote: number | null = null; // Promedio de los votos
+  allPlayers: Player[] = [];
+  cardsRevealed: boolean = false;
+  isVotingActive: boolean = true;
+  groupedSelectedCards: { cardValue: string; voteCount: number }[] = [];
+  average: number = 0;
+  selectedPlayer: Player | undefined = undefined;
+  isAdminChecked: boolean = false;
+  showAdminModal: boolean = false;
 
   constructor() {
     this.playerName = localStorage.getItem('adminName') || localStorage.getItem('playerName') || 'Jugador';
     this.playerInitials = this.getInitials(this.playerName);
-    this.userRole = localStorage.getItem('userRole') || 'jugador';
+    this.userRole = (localStorage.getItem('userRole') as 'jugador' | 'espectador') || 'jugador';
     this.isSpectator = this.userRole === 'espectador';
     this.roomId = localStorage.getItem('roomId') || '';
 
@@ -42,35 +69,47 @@ export class GameTableComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.socket.emit('joinRoom', { playerName: this.playerName, role: this.userRole, roomId: this.roomId });
+    this.socket.emit('joinRoom', {
+      playerName: this.playerName,
+      role: this.userRole,
+      roomId: this.roomId
+    });
 
-    this.socket.on('roomDetails', (data: any) => {
+    this.socket.on('roomDetails', (data: RoomDetails) => {
       console.log('Detalles de la sala recibidos:', data);
-      this.allPlayers = data.players.map((player: any) => ({
+      this.allPlayers = data.players.map(player => ({
         name: player.playerName,
         role: player.role,
-        selectedCard: null,
+        roleAdmin: player.roleAdmin,
+        selectedCard: null
       }));
       this.distributePlayers();
     });
 
-    this.socket.on('roleChanged', (data: any) => {
+    this.socket.on('roleChanged', (data: RoleChangeData) => {
       const player = this.allPlayers.find(p => p.name === data.playerName);
       if (player) {
         player.role = data.role;
-        
-        // Si el jugador actual cambia su rol
         if (player.name === this.playerName) {
           this.isSpectator = data.role === 'espectador';
         }
-    
         this.distributePlayers();
       }
     });
-    
 
-    this.socket.on('cardSelected', (data: any) => {
+    this.socket.on('changeAdmin', (data: AdminChangeData) => {
       console.log(data);
+      const player = this.allPlayers.find(p => p.name === data.playerName);
+      if (player) {
+        player.roleAdmin = data.roleAdmin;
+        if (player.name === this.playerName) {
+          this.updateLocalStorageRole(player.roleAdmin);
+        }
+        this.distributePlayers();
+      }
+    });
+
+    this.socket.on('cardSelected', (data: CardSelectionData) => {
       const player = this.allPlayers.find(p => p.name === data.playerName);
       if (player) {
         player.selectedCard = data.card;
@@ -78,20 +117,64 @@ export class GameTableComponent implements OnInit {
       }
     });
 
-    this.socket.on('cardsRevealed', (data: any) => {
+    this.socket.on('cardsRevealed', () => {
       this.cardsRevealed = true;
       this.calculateGroupedVotesAndAverage();
     });
 
     this.socket.on('restartVoting', () => {
-      this.selectedCard = null;
-      this.allPlayers.forEach(player => player.selectedCard = null);
-      this.cardsRevealed = false;
-      this.isVotingActive = true;
-      this.revealedCardsSummary = [];
-      this.averageVote = null;
+      this.resetVotingState();
     });
   }
+
+  ngOnDestroy() {
+    this.socket.off('roomDetails');
+    this.socket.off('roleChanged');
+    this.socket.off('changeAdmin');
+    this.socket.off('cardSelected');
+    this.socket.off('cardsRevealed');
+    this.socket.off('restartVoting');
+  }
+
+  updateLocalStorageRole(roleAdmin: 'admin' | 'jugador') {
+    if (roleAdmin === 'admin') {
+      localStorage.setItem('adminName', this.playerName);
+      localStorage.removeItem('playerName');
+    } else {
+      localStorage.setItem('playerName', this.playerName);
+      localStorage.removeItem('adminName');
+      localStorage.setItem('userRole', this.userRole);
+    }
+  }
+
+  openAdminModal(player: Player) {
+    if (this.isAdminUser()) {
+      this.selectedPlayer = player;
+      this.isAdminChecked = player.roleAdmin === 'admin';
+      this.showAdminModal = true;
+    }
+  }
+
+  // Método closeAdminModal():
+  closeAdminModal() {
+    this.selectedPlayer = undefined; // Cambiado de null a undefined
+    this.showAdminModal = false;
+  }
+
+
+  toggleAdminRole(player?: Player) {
+    const targetPlayer = player || this.selectedPlayer;
+    if (targetPlayer) {
+      targetPlayer.roleAdmin = this.isAdminChecked ? 'admin' : 'jugador';
+      this.socket.emit('changeAdmin', {
+        playerName: targetPlayer.name,
+        roleAdmin: targetPlayer.roleAdmin,
+        roomId: this.roomId
+      });
+    }
+    this.closeAdminModal();
+  }
+
 
   distributePlayers() {
     const totalPlayers = this.allPlayers.length;
@@ -106,6 +189,7 @@ export class GameTableComponent implements OnInit {
     this.playersRight = this.allPlayers.slice(topPlayersCount + bottomPlayersCount + leftPlayersCount);
   }
 
+
   getInitials(name: string): string {
     const words = name.trim().split(' ');
     if (words.length === 1) {
@@ -115,10 +199,16 @@ export class GameTableComponent implements OnInit {
   }
 
   selectCard(card: string) {
+    if (!this.isVotingActive || this.isSpectator) {
+      return;
+    }
     this.selectedCard = card;
     localStorage.setItem('selectedCard', card);
-    this.socket.emit('selectCard', { playerName: this.playerName, card, roomId: this.roomId });
-    console.log(`Carta seleccionada: ${card} en la sala ${this.roomId}`);
+    this.socket.emit('selectCard', {
+      playerName: this.playerName,
+      card,
+      roomId: this.roomId
+    });
     const player = this.allPlayers.find(p => p.name === this.playerName);
     if (player) {
       player.selectedCard = card;
@@ -134,54 +224,48 @@ export class GameTableComponent implements OnInit {
   }
 
   revealCards() {
-    this.socket.emit('revealCards', this.roomId);
-    this.cardsRevealed = true;
-    this.isVotingActive = false;
+    if (this.isAdminUser()) {
+      this.socket.emit('revealCards', this.roomId);
+    }
   }
 
   restartVoting() {
-    // Solo el administrador debe emitir este evento
     if (this.isAdminUser()) {
-      this.selectedCard = null;
-      this.allPlayers.forEach(player => player.selectedCard = null);
-      this.cardsRevealed = false;
-      this.isVotingActive = true;
-      this.revealedCardsSummary = [];
-      this.averageVote = null;
-
-      // Emitir el evento de reinicio al servidor solo si es el administrador
+      this.resetVotingState();
       this.socket.emit('restartVoting', this.roomId);
     }
   }
 
-
-
-
-  groupedSelectedCards: { cardValue: string, voteCount: number }[] = [];
-  average: number = 0;
+  resetVotingState() {
+    this.selectedCard = null;
+    this.allPlayers.forEach(player => (player.selectedCard = null));
+    this.cardsRevealed = false;
+    this.isVotingActive = true;
+    this.groupedSelectedCards = [];
+    this.average = 0;
+  }
 
   calculateGroupedVotesAndAverage() {
     const validCards = this.allPlayers
-      .filter(player => player.selectedCard && !['?', '☕'].includes(player.selectedCard)) // Filtrar jugadores con cartas válidas para el promedio
-      .map(player => parseInt(player.selectedCard!)); // Convertir las cartas seleccionadas a enteros
+      .filter(player => player.selectedCard && !['?', '☕'].includes(player.selectedCard!))
+      .map(player => parseInt(player.selectedCard!, 10))
+      .filter(value => !isNaN(value));
 
     const allSelectedCards = this.allPlayers
-      .filter(player => player.selectedCard) // Incluir todas las cartas seleccionadas, incluso '?', '☕'
-      .map(player => player.selectedCard);
+      .filter(player => player.selectedCard)
+      .map(player => player.selectedCard!);
 
-    // Agrupar las cartas por valor y contar los votos
-    this.groupedSelectedCards = allSelectedCards.reduce((acc: any, card) => {
-      const foundCard = acc.find((item: any) => item.cardValue === card);
-      if (foundCard) {
-        foundCard.voteCount++;
+    this.groupedSelectedCards = allSelectedCards.reduce((acc, card) => {
+      const existing = acc.find(item => item.cardValue === card);
+      if (existing) {
+        existing.voteCount++;
       } else {
         acc.push({ cardValue: card, voteCount: 1 });
       }
       return acc;
-    }, []);
+    }, [] as { cardValue: string; voteCount: number }[]);
 
-    // Calcular el promedio solo con las cartas válidas
-    const sum = validCards.reduce((total, card) => total + card, 0);
+    const sum = validCards.reduce((total, num) => total + num, 0);
     this.average = validCards.length > 0 ? sum / validCards.length : 0;
   }
 }

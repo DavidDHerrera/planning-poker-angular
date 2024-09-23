@@ -1,6 +1,6 @@
 import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CreateGameComponent } from './create-game/create-game.component';
@@ -27,6 +27,7 @@ import { JoinRoomComponent } from './join-room/join-room.component';
     JoinRoomComponent,
     StoreModule.forRoot({}, {}),
     EffectsModule.forRoot([]),
+    FormsModule,
     StoreModule.forRoot({ gameName: gameReducer }),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() })
   ],

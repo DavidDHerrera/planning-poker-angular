@@ -1,57 +1,73 @@
 @import '../../styles.scss';
 
+/* Variables para dimensiones y tamaños */
+$neon-shape-width: 603px;
+$neon-shape-height: 345px;
+$neon-shape-border-radius: 276px;
+$card-width: 48px;
+$card-height: 80px;
+$small-card-width: 35px;
+$small-card-height: 60px;
+$card-border-radius: 7px;
+$player-initials-size: 56px;
+$player-initials-font-size: 21px;
+$label-padding-left: 35px;
+
+/* Estilos para .neon-shape */
 .neon-shape {
-    width: 603px;
-    height: 345px;
-    border-radius: 276px;
+    width: $neon-shape-width;
+    height: $neon-shape-height;
+    border-radius: $neon-shape-border-radius;
     position: relative;
     border: 2px solid $purple-heart;
     box-sizing: border-box;
     grid-area: table;
 
-    button.reveal-cards {
+    .reveal-cards {
         @include button-styles($purple-heart, $purple-heart, $disabled-color);
-        position: relative;
-        top: 44%;
-        left: 37%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         color: $input-text-color;
         cursor: pointer;
         z-index: 1;
         padding: 12px 24px;
     }
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-sizing: border-box;
+        border-radius: $neon-shape-border-radius;
+    }
+
+    &::before {
+        width: $neon-shape-width - 48px;
+        height: $neon-shape-height - 47px;
+        border: 2px solid $pale-periwinkle;
+    }
+
+    &::after {
+        width: $neon-shape-width - 82px;
+        height: $neon-shape-height - 73px;
+        border: 2px solid $purple-heart;
+    }
 }
 
-.neon-shape::before,
-.neon-shape::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-sizing: border-box;
-}
-
-.neon-shape::before {
-    width: 555px;
-    height: 298px;
-    border-radius: 276px;
-    border: 2px solid $pale-periwinkle;
-
-}
-
-.neon-shape::after {
-    width: 521px;
-    height: 272px;
-    border-radius: 276px;
-    border: 2px solid $purple-heart;
-}
-
+/* Contenedor principal */
 .content-table {
     display: flex;
     flex-direction: column;
     row-gap: 20px;
+    align-items: center;
 }
 
+/* Información del jugador */
 .player-info {
     display: flex;
     flex-direction: column;
@@ -59,8 +75,8 @@
     row-gap: 5px;
 }
 
-.player-cards,
-.player-info {
+/* Cartas y jugadores */
+.player-cards {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -70,14 +86,19 @@
         justify-content: center;
         gap: 15px;
         margin-top: 15px;
+
+        &.only {
+            flex-direction: column;
+            align-items: center;
+        }
     }
 
     .card {
-        width: 48px;
-        height: 80px;
+        width: $card-width;
+        height: $card-height;
         background-color: transparent;
         border: 1px solid $border-color;
-        border-radius: 7px;
+        border-radius: $card-border-radius;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -104,28 +125,31 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-    }
 
-    .cards-container.only,
-    .player.only {
-        flex-direction: column;
-        align-items: center;
+        &.only {
+            .card {
+                width: $small-card-width;
+                height: $small-card-height;
+                cursor: default;
 
-        .card {
-            width: 35px;
-            height: 60px;
-            cursor: default;
-
-            &:hover {
-                transform: none;
+                &:hover {
+                    transform: none;
+                }
             }
         }
-    }
 
-    .player-initials {
-        width: 56px;
-        height: 56px;
-        font-size: 21px;
+        .player-initials {
+            width: $player-initials-size;
+            height: $player-initials-size;
+            font-size: $player-initials-font-size;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: $border-color;
+            border-radius: 50%;
+            color: $input-text-color;
+            font-weight: bold;
+        }
     }
 
     .content-cards-select {
@@ -144,6 +168,7 @@
     }
 }
 
+/* Título */
 h5 {
     color: $input-text-color;
     font-size: 21px;
@@ -151,24 +176,35 @@ h5 {
     font-weight: 600;
 }
 
+/* Contenedor de jugadores en la mesa */
 .players-container {
-    grid-gap: .8rem;
     display: inline-grid;
     grid-template-areas:
-        "left top right"
-        "left table right"
-        "left bottom right";
+        'left top right'
+        'left table right'
+        'left bottom right';
     grid-template-columns: 10.4rem 1fr 10.4rem;
     grid-template-rows: auto 1fr auto;
+    grid-gap: 0.8rem;
     margin: 0 auto;
     min-height: 200px;
     width: auto;
 
-    .table-bottom,
-    .table-top {
+    .table-top,
+    .table-bottom {
         display: flex;
         justify-content: center;
         gap: 50px;
+    }
+
+    .table-top {
+        align-items: stretch;
+        grid-area: top;
+    }
+
+    .table-bottom {
+        align-items: center;
+        grid-area: bottom;
     }
 
     .table-left,
@@ -178,26 +214,16 @@ h5 {
         align-items: center;
     }
 
-    .table-top {
-        align-items: stretch;
-        grid-area: top;
-    }
-
     .table-left {
         grid-area: left;
-        
     }
 
     .table-right {
         grid-area: right;
     }
-
-    .table-bottom {
-        align-items: center;
-        grid-area: bottom;
-    }
 }
 
+/* Resultados de las votaciones */
 .results {
     margin-top: 40px;
     display: flex;
@@ -213,12 +239,74 @@ h5 {
         .average-number {
             font-size: 36px;
             font-weight: 700;
+            color: $input-text-color;
         }
     }
 }
 
-.card.selected {
-    /* Estilo para la carta seleccionada (ej: cambio de color de fondo) */
-    background-color: #4CAF50; /* Ejemplo: color verde cuando está seleccionada */
-    border: 2px solid #fff;
-  }
+.modal {
+
+    /* Estilos para el label y el checkbox personalizado */
+    label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        position: relative;
+        padding-left: 35px;
+        /* Espacio para el checkbox personalizado */
+
+        input[type='checkbox'] {
+            opacity: 0;
+            position: absolute;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .custom-checkbox {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 21px;
+            height: 21px;
+            background-color: transparent;
+            border: 3px solid $border-color;
+            border-radius: 4px;
+            /* Bordes ligeramente redondeados */
+            display: inline-block;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+
+            &::after {
+                content: '';
+                position: absolute;
+                display: none;
+                left: 5px;
+                top: 1px;
+                width: 5px;
+                height: 10px;
+                border: solid $border-color;
+                border-width: 0 3px 3px 0;
+                transform: rotate(45deg);
+            }
+        }
+
+        input[type='checkbox']:checked+.custom-checkbox {
+            background-color: $radio-button-purple;
+            border-color: $border-color;
+
+            &::after {
+                display: block;
+                border-color: $button-bg-color;
+            }
+        }
+
+        /* Estilo para el texto del label */
+        .text {
+            margin-left: 8px;
+            color: $input-text-color;
+            font-size: 16px;
+            font-weight: 500;
+        }
+    }
+}

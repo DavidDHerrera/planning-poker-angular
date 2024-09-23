@@ -97,7 +97,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('changeRole', ({ playerName, role, roomId }) => {
-    
+
     if (rooms[roomId]) {
       const player = rooms[roomId].players.find(p => p.playerName === playerName);
       if (player) {
@@ -110,7 +110,7 @@ io.on('connection', (socket) => {
 
   socket.on('changeAdmin', ({ playerName, roleAdmin, roomId }) => {
     console.log(roleAdmin);
-    
+
     if (rooms[roomId]) {
       const player = rooms[roomId].players.find(p => p.playerName === playerName);
       if (player) {
@@ -120,6 +120,17 @@ io.on('connection', (socket) => {
       }
     }
   });
+
+  socket.on('changeScoringMode', (data) => {
+    const { scoringMode, roomId } = data;
+    // Actualizar el modo de puntaje en la sala
+    const room = rooms[roomId];
+    if (room) {
+      room.scoringMode = scoringMode;
+      io.to(roomId).emit('scoringModeChanged', { scoringMode });
+    }
+  });
+
 
 
   // Reiniciar la votación

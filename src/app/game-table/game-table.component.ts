@@ -14,6 +14,7 @@ interface RoomDetails {
     role: 'jugador' | 'espectador';
     roleAdmin: 'admin' | 'jugador';
   }[];
+  scoringMode: 'fibonacci' | 'tshirt'; // Nuevo campo para el modo de puntaje
 }
 
 interface RoleChangeData {
@@ -31,6 +32,11 @@ interface CardSelectionData {
   card: string;
 }
 
+interface ScoringModeChangeData {
+  scoringMode: 'fibonacci' | 'tshirt';
+  roomId: string;
+}
+
 @Component({
   selector: 'app-game-table',
   templateUrl: './game-table.component.html',
@@ -41,7 +47,7 @@ export class GameTableComponent implements OnInit, OnDestroy {
   playerInitials: string = '';
   userRole: 'jugador' | 'espectador' = 'jugador';
   isSpectator: boolean = false;
-  cards: string[] = ['0', '1', '3', '5', '8', '13', '21', '34', '55', '89', '?', '☕'];
+  cards: string[] = [];
   selectedCard: string | null = null;
   socket!: Socket;
   roomId: string = '';
@@ -53,22 +59,47 @@ export class GameTableComponent implements OnInit, OnDestroy {
   cardsRevealed: boolean = false;
   isVotingActive: boolean = true;
   groupedSelectedCards: { cardValue: string; voteCount: number }[] = [];
-  average: number = 0;
+  average: number | null = null;
   selectedPlayer: Player | undefined = undefined;
   isAdminChecked: boolean = false;
   showAdminModal: boolean = false;
+  scoringModes: { label: string; value: 'fibonacci' | 'tshirt'; cards: string[] }[] = [];
+  selectedScoringMode: 'fibonacci' | 'tshirt' = 'fibonacci'; // Por defecto Fibonacci
 
   constructor() {
-    this.playerName = localStorage.getItem('adminName') || localStorage.getItem('playerName') || 'Jugador';
+    this.playerName =
+      localStorage.getItem('adminName') ||
+      localStorage.getItem('playerName') ||
+      'Jugador';
     this.playerInitials = this.getInitials(this.playerName);
-    this.userRole = (localStorage.getItem('userRole') as 'jugador' | 'espectador') || 'jugador';
+    this.userRole =
+      (localStorage.getItem('userRole') as 'jugador' | 'espectador') ||
+      'jugador';
     this.isSpectator = this.userRole === 'espectador';
     this.roomId = localStorage.getItem('roomId') || '';
 
     this.socket = io('http://localhost:3000');
+
+    // Definición de los modos de puntaje
+    this.scoringModes = [
+      {
+        label: 'Fibonacci',
+        value: 'fibonacci',
+        cards: ['0', '1', '3', '5', '8', '13', '21', '34', '55', '89', '?', '☕']
+      },
+      {
+        label: 'T-Shirt',
+        value: 'tshirt',
+        cards: ['XS', 'S', 'M', 'L', 'XL', '?', '☕']
+      }
+    ];
   }
 
   ngOnInit() {
+    // Establecer el modo de puntaje por defecto
+    this.selectedScoringMode = this.scoringModes[0].value;
+    this.cards = this.scoringModes[0].cards;
+
     this.socket.emit('joinRoom', {
       playerName: this.playerName,
       role: this.userRole,
@@ -83,6 +114,11 @@ export class GameTableComponent implements OnInit, OnDestroy {
         roleAdmin: player.roleAdmin,
         selectedCard: null
       }));
+      // Actualizar el modo de puntaje si está disponible
+      if (data.scoringMode) {
+        this.selectedScoringMode = data.scoringMode;
+        this.updateCardsBasedOnScoringMode();
+      }
       this.distributePlayers();
     });
 
@@ -125,6 +161,12 @@ export class GameTableComponent implements OnInit, OnDestroy {
     this.socket.on('restartVoting', () => {
       this.resetVotingState();
     });
+
+    this.socket.on('scoringModeChanged', (data: ScoringModeChangeData) => {
+      this.selectedScoringMode = data.scoringMode;
+      this.updateCardsBasedOnScoringMode();
+      this.resetVotingState();
+    });
   }
 
   ngOnDestroy() {
@@ -134,6 +176,7 @@ export class GameTableComponent implements OnInit, OnDestroy {
     this.socket.off('cardSelected');
     this.socket.off('cardsRevealed');
     this.socket.off('restartVoting');
+    this.socket.off('scoringModeChanged');
   }
 
   updateLocalStorageRole(roleAdmin: 'admin' | 'jugador') {
@@ -155,12 +198,10 @@ export class GameTableComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Método closeAdminModal():
   closeAdminModal() {
-    this.selectedPlayer = undefined; // Cambiado de null a undefined
+    this.selectedPlayer = undefined;
     this.showAdminModal = false;
   }
-
 
   toggleAdminRole(player?: Player) {
     const targetPlayer = player || this.selectedPlayer;
@@ -175,20 +216,33 @@ export class GameTableComponent implements OnInit, OnDestroy {
     this.closeAdminModal();
   }
 
-
   distributePlayers() {
     const totalPlayers = this.allPlayers.length;
     const topPlayersCount = Math.min(Math.floor(totalPlayers / 2), 3);
-    const bottomPlayersCount = Math.min(totalPlayers - topPlayersCount, 2);
-    const leftPlayersCount = Math.min(Math.floor((totalPlayers - topPlayersCount - bottomPlayersCount) / 2), 1);
-    const rightPlayersCount = totalPlayers - topPlayersCount - bottomPlayersCount - leftPlayersCount;
+    const bottomPlayersCount = Math.min(
+      totalPlayers - topPlayersCount,
+      2
+    );
+    const leftPlayersCount = Math.min(
+      Math.floor((totalPlayers - topPlayersCount - bottomPlayersCount) / 2),
+      1
+    );
+    const rightPlayersCount =
+      totalPlayers - topPlayersCount - bottomPlayersCount - leftPlayersCount;
 
     this.playersTop = this.allPlayers.slice(0, topPlayersCount);
-    this.playersBottom = this.allPlayers.slice(topPlayersCount, topPlayersCount + bottomPlayersCount);
-    this.playersLeft = this.allPlayers.slice(topPlayersCount + bottomPlayersCount, topPlayersCount + bottomPlayersCount + leftPlayersCount);
-    this.playersRight = this.allPlayers.slice(topPlayersCount + bottomPlayersCount + leftPlayersCount);
+    this.playersBottom = this.allPlayers.slice(
+      topPlayersCount,
+      topPlayersCount + bottomPlayersCount
+    );
+    this.playersLeft = this.allPlayers.slice(
+      topPlayersCount + bottomPlayersCount,
+      topPlayersCount + bottomPlayersCount + leftPlayersCount
+    );
+    this.playersRight = this.allPlayers.slice(
+      topPlayersCount + bottomPlayersCount + leftPlayersCount
+    );
   }
-
 
   getInitials(name: string): string {
     const words = name.trim().split(' ');
@@ -242,19 +296,15 @@ export class GameTableComponent implements OnInit, OnDestroy {
     this.cardsRevealed = false;
     this.isVotingActive = true;
     this.groupedSelectedCards = [];
-    this.average = 0;
+    this.average = null;
   }
 
   calculateGroupedVotesAndAverage() {
-    const validCards = this.allPlayers
-      .filter(player => player.selectedCard && !['?', '☕'].includes(player.selectedCard!))
-      .map(player => parseInt(player.selectedCard!, 10))
-      .filter(value => !isNaN(value));
-
     const allSelectedCards = this.allPlayers
       .filter(player => player.selectedCard)
       .map(player => player.selectedCard!);
 
+    // Agrupar las cartas por valor y contar los votos
     this.groupedSelectedCards = allSelectedCards.reduce((acc, card) => {
       const existing = acc.find(item => item.cardValue === card);
       if (existing) {
@@ -265,7 +315,52 @@ export class GameTableComponent implements OnInit, OnDestroy {
       return acc;
     }, [] as { cardValue: string; voteCount: number }[]);
 
-    const sum = validCards.reduce((total, num) => total + num, 0);
-    this.average = validCards.length > 0 ? sum / validCards.length : 0;
+    // Solo calcular el promedio si el modo de puntaje es 'fibonacci'
+    if (this.selectedScoringMode === 'fibonacci') {
+      const validCards = this.allPlayers
+        .filter(
+          player =>
+            player.selectedCard &&
+            !['?', '☕'].includes(player.selectedCard!)
+        )
+        .map(player => parseFloat(player.selectedCard!))
+        .filter(value => !isNaN(value));
+
+      const sum = validCards.reduce((total, num) => total + num, 0);
+      this.average =
+        validCards.length > 0 ? sum / validCards.length : null;
+    } else {
+      this.average = null;
+    }
+  }
+
+  // Nuevo método para actualizar las cartas según el modo de puntaje
+  updateCardsBasedOnScoringMode() {
+    const mode = this.scoringModes.find(
+      m => m.value === this.selectedScoringMode
+    );
+    if (mode) {
+      this.cards = mode.cards;
+    }
+  }
+
+  // Método para cambiar el modo de puntaje
+  changeScoringMode() {
+    if (!this.isAdminUser()) {
+      return;
+    }
+
+    if (this.cardsRevealed) {
+      alert(
+        'No se puede cambiar el modo de puntaje después de revelar las cartas. Reinicia la votación primero.'
+      );
+      return;
+    }
+
+    // Emitir el cambio de modo al servidor
+    this.socket.emit('changeScoringMode', {
+      scoringMode: this.selectedScoringMode,
+      roomId: this.roomId
+    });
   }
 }

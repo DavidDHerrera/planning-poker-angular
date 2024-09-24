@@ -131,9 +131,6 @@ io.on('connection', (socket) => {
     }
   });
 
-
-
-  // Reiniciar la votación
   // Reiniciar la votación en el servidor
   socket.on('restartVoting', (roomId) => {
     if (rooms[roomId]) {
@@ -145,7 +142,6 @@ io.on('connection', (socket) => {
       console.log(`Votación reiniciada para la sala ${roomId}`);
     }
   });
-
 
   // Cuando un usuario se desconecta
   socket.on('disconnect', () => {

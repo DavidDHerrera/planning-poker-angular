@@ -12,12 +12,12 @@ export class HeaderComponent {
   gameName: string = '';
   roomName: string = '';
   playerInitials: string = '';
-  isGameTablePage: boolean = false;  // Variable para la clase extra
+  isGameTablePage: boolean = false;
   roomId: string | null = null;
-  showInviteModal = false; // Controlar la visibilidad del modal
+  showInviteModal = false;
   inviteLink: string = '';
-  showMenu = false; // Controla la visibilidad del menú desplegable
-  isSpectator = false; // Variable para el modo espectador
+  showMenu = false;
+  isSpectator = false;
   socket: any;
 
   constructor(private router: Router, private route: ActivatedRoute) {
@@ -78,8 +78,7 @@ export class HeaderComponent {
     localStorage.setItem('userRole', newRole);
     
     this.socket.emit('changeRole', { playerName: this.roomName, role: newRole, roomId: roomId });
-    
-    // Aquí puedes agregar la lógica para notificar a otros usuarios sobre el cambio de rol
+  
   }
   
 }

@@ -17,9 +17,9 @@ export class CreateGameComponent {
   gameForm!: FormGroup;
 
   constructor(
-    private roomService: RoomService, // Inyectamos RoomService
+    private roomService: RoomService,
     private router: Router,
-    private store: Store<AppState> // Inyectamos Store para NgRx
+    private store: Store<AppState>
   ) {
     this.gameForm = this.roomService.createGameForm();
 

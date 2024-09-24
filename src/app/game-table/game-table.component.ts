@@ -14,7 +14,7 @@ interface RoomDetails {
     role: 'jugador' | 'espectador';
     roleAdmin: 'admin' | 'jugador';
   }[];
-  scoringMode: 'fibonacci' | 'tshirt'; // Nuevo campo para el modo de puntaje
+  scoringMode: 'fibonacci' | 'tshirt';
 }
 
 interface RoleChangeData {
@@ -64,8 +64,8 @@ export class GameTableComponent implements OnInit, OnDestroy {
   isAdminChecked: boolean = false;
   showAdminModal: boolean = false;
   scoringModes: { label: string; value: 'fibonacci' | 'tshirt'; cards: string[] }[] = [];
-  selectedScoringMode: 'fibonacci' | 'tshirt' = 'fibonacci'; // Por defecto Fibonacci
-  isMobile: boolean = false; // Nueva propiedad para detectar dispositivos móviles
+  selectedScoringMode: 'fibonacci' | 'tshirt' = 'fibonacci';
+  isMobile: boolean = false;
 
   constructor() {
     this.playerName =
@@ -97,11 +97,9 @@ export class GameTableComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Establecer el modo de puntaje por defecto
     this.selectedScoringMode = this.scoringModes[0].value;
     this.cards = this.scoringModes[0].cards;
 
-    // Verificar el tamaño de pantalla al inicializar
     this.checkScreenSize();
 
     this.socket.emit('joinRoom', {
@@ -118,7 +116,7 @@ export class GameTableComponent implements OnInit, OnDestroy {
         roleAdmin: player.roleAdmin,
         selectedCard: null
       }));
-      // Actualizar el modo de puntaje si está disponible
+
       if (data.scoringMode) {
         this.selectedScoringMode = data.scoringMode;
         this.updateCardsBasedOnScoringMode();
@@ -195,7 +193,7 @@ export class GameTableComponent implements OnInit, OnDestroy {
   }
 
   checkScreenSize() {
-    this.isMobile = window.innerWidth <= 768; // Puedes ajustar el punto de quiebre según tus necesidades
+    this.isMobile = window.innerWidth <= 768;
   }
 
   ngOnDestroy() {

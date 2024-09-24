@@ -13,8 +13,8 @@ import { CommonModule } from '@angular/common';
 export class UserFormComponent {
 
   @Input() formGroup!: FormGroup;
-  @Input() nameControlName!: string; // Nombre del control para el input de nombre
-  @Input() submitButtonText: string = 'Continuar'; // Texto del botón de enviar
+  @Input() nameControlName!: string;
+  @Input() submitButtonText: string = 'Continuar';
 
   @Output() formSubmit = new EventEmitter<void>();
 

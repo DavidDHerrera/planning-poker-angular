@@ -1,6 +1,5 @@
 @import '../../styles.scss';
 
-/* Variables para dimensiones comunes */
 $border-radius: 25px;
 $form-width: 514px;
 $input-width: 292px;
@@ -8,12 +7,11 @@ $button-max-width: 159px;
 $label-padding-left: 35px;
 $radio-size: 21px;
 $radio-inner-size: 10.5px;
+$neon-shape-width: 603px;
+$neon-shape-height: 345px;
+$neon-shape-border-radius: 276px;
 
 .create-admin-container {
-    border: 1px solid $border-color;
-    border-radius: $border-radius;
-    background: $blue-zodiac;
-
     .form-container {
         padding: 20px;
         width: $form-width;
@@ -21,6 +19,11 @@ $radio-inner-size: 10.5px;
         flex-direction: column;
         align-items: center;
         box-sizing: border-box;
+
+        border: 1px solid $border-color;
+        border-radius: $border-radius;
+        background: $blue-zodiac;
+
 
         .name-admin,
         .mode-selection {
@@ -59,18 +62,18 @@ $radio-inner-size: 10.5px;
                 input[type='radio'] {
                     opacity: 0;
                     position: absolute;
+                    left: 0;
                     cursor: pointer;
                 }
 
                 .custom-radio {
-                    position: absolute;
-                    left: 0;
-                    top: 50%;
-                    transform: translateY(-50%);
+                    position: relative;
+                    margin-left: 10px;
+                    transform: translateY(0%);
                     width: $radio-size;
                     height: $radio-size;
-                    background-color: #6429CD4D;
-                    border: 3px solid $border-color;
+                    background-color: $radio-button-purple;
+                    border: 1px solid $border-color;
                     border-radius: 50%;
                     display: inline-block;
                     transition: border-color 0.2s ease;
@@ -109,15 +112,78 @@ $radio-inner-size: 10.5px;
     }
 }
 
+.neon-shape {
+    width: $neon-shape-width;
+    height: $neon-shape-height;
+    border-radius: $neon-shape-border-radius;
+    position: relative;
+    border: 2px solid $purple-heart;
+    box-sizing: border-box;
+    grid-area: table;
+
+    .reveal-cards {
+        @include button-styles($purple-heart, $purple-heart, $disabled-color);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: $input-text-color;
+        cursor: pointer;
+        z-index: 1;
+        padding: 12px 24px;
+    }
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-sizing: border-box;
+        border-radius: $neon-shape-border-radius;
+    }
+
+    &::before {
+        width: $neon-shape-width - 48px;
+        height: $neon-shape-height - 47px;
+        border: 2px solid $pale-periwinkle;
+    }
+
+    &::after {
+        width: $neon-shape-width - 82px;
+        height: $neon-shape-height - 73px;
+        border: 2px solid $purple-heart;
+    }
+}
+
 @media (max-width: 768px) {
-    .create-admin-container {
+    .create-admin-container.modal {
+        align-items: center;
+
         .form-container {
-            width: auto;
+            width: 94%;
             padding: 10px;
+
+            .name-admin input {
+                width: 260px;
+            }
 
             button {
                 padding: 10px;
             }
+            
+            .mode-selection {
+                column-gap: 3px;
+            }
+
+            label {
+                padding-left: 27px;
+            }
         }
+    }
+
+    .content-table {
+        display: none;
     }
 }

@@ -10,8 +10,8 @@ const routes: Routes = [
   { path: 'create-admin', component: CreateAdminComponent },
   { path: 'create-admin/:roomId', component: CreateAdminComponent },
   { path: 'create-player/:roomId', component: JoinRoomComponent },
-  { path: 'game-table/:roomId', component: GameTableComponent }, // Ruta para la HU 2
-  { path: '', redirectTo: '/create-game', pathMatch: 'full' }  // Redirige a la pantalla inicial
+  { path: 'game-table/:roomId', component: GameTableComponent },
+  { path: '', redirectTo: '/create-game', pathMatch: 'full' }
 ];
 
 @NgModule({

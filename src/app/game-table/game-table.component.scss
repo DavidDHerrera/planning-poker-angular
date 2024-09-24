@@ -57,6 +57,8 @@ $label-padding-left: 35px;
         height: $neon-shape-height - 73px;
         border: 2px solid $purple-heart;
     }
+
+
 }
 
 /* Contenedor principal */
@@ -81,45 +83,6 @@ $label-padding-left: 35px;
     flex-direction: column;
     align-items: center;
 
-    .cards-container {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 15px;
-
-        &.only {
-            flex-direction: column;
-            align-items: center;
-        }
-    }
-
-    .card {
-        width: $card-width;
-        height: $card-height;
-        background-color: transparent;
-        border: 1px solid $border-color;
-        border-radius: $card-border-radius;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: $input-text-color;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 600;
-        line-height: 16px;
-        transition: transform 0.3s;
-        padding: 10px;
-        box-sizing: border-box;
-
-        &:hover {
-            transform: scale(1.1);
-        }
-
-        &.selected {
-            background-color: $color-mauve;
-            color: $primary-color;
-        }
-    }
 
     .player {
         display: flex;
@@ -145,9 +108,9 @@ $label-padding-left: 35px;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: $border-color;
+            background-color: $lavender-blue;
             border-radius: 50%;
-            color: $input-text-color;
+            color: $primary-color;
             font-weight: bold;
         }
     }
@@ -166,14 +129,6 @@ $label-padding-left: 35px;
             font-size: 16px;
         }
     }
-}
-
-/* Título */
-h5 {
-    color: $input-text-color;
-    font-size: 21px;
-    line-height: 21px;
-    font-weight: 600;
 }
 
 /* Contenedor de jugadores en la mesa */
@@ -439,6 +394,15 @@ h5 {
             select {
                 padding: 5px 10px;
                 font-size: 12px;
+            }
+        }
+
+        .player.only .player-initials {
+            width: 36px;
+            height: 36px;
+
+            span {
+                font-size: 14px;
             }
         }
     }

@@ -95,11 +95,10 @@ app-root {
     flex-direction: column;
 }
 
-app-create-game,
-app-create-admin,
-app-join-room {
+app-create-game {
     margin: auto;
 }
+
 
 body {
     margin: 0;
@@ -200,6 +199,59 @@ body {
             }
         }
     }
+}
+
+.content-cards-select {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card {
+    width: $card-width;
+    height: $card-height;
+    background-color: transparent;
+    border: 1px solid $border-color;
+    border-radius: $card-border-radius;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $input-text-color;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 16px;
+    transition: transform 0.3s;
+    padding: 10px;
+    box-sizing: border-box;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+    &.selected {
+        background-color: $color-mauve;
+        color: $primary-color;
+    }
+}
+
+.cards-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+
+    &.only {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+h5 {
+    color: $input-text-color;
+    font-size: 21px;
+    line-height: 21px;
+    font-weight: 600;
 }
 
 /* Estilos responsivos para pantallas pequeñas */

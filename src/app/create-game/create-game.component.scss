@@ -5,7 +5,7 @@
     flex-direction: column;
     gap: 24px;
     align-items: center;
-    
+
     .name-create-game {
         display: flex;
         flex-direction: column;
@@ -21,29 +21,7 @@
         }
 
         input[type="text"] {
-            width: 292px;
-            padding: $input-padding;
-            border: 1px solid $border-color; // Usando variable para el borde
-            border-radius: 100px;
-            background-color: transparent;
-            color: $input-text-color; // Usando variable para el color del texto
-            font-size: 14px;
-            font-weight: 400;
-            line-height: 19.6px;
-            text-align: center;
-            height: 40px;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-
-            &:focus {
-                outline: none;
-                border-color: $hover-shadow-color; // Usando variable para el color del borde al hacer focus
-            }
-
-            &:hover {
-                cursor: pointer;
-                box-shadow: 0 0 10px $hover-shadow-color; // Usando variable para la sombra en hover
-            }
+            @include input-styles(292px);
         }
     }
 

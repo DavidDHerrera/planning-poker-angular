@@ -71,6 +71,9 @@
               "browserTarget": "prueba-app:build:development"
             }
           },
+          "options": {
+            "port": 4200
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {

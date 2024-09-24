@@ -1,0 +1,128 @@
+<body class="content-table">
+    <div *ngIf="isAdminUser()" class="scoring-mode-selector">
+        <label class="text" for="scoringMode">Modo de puntaje:</label>
+        <select id="scoringMode" [(ngModel)]="selectedScoringMode" (change)="changeScoringMode()"
+            [disabled]="cardsRevealed">
+            <option *ngFor="let mode of scoringModes" [value]="mode.value">
+                {{ mode.label }}
+            </option>
+        </select>
+    </div>
+    <!-- Si el usuario es jugador -->
+    <div class="player-cards">
+        <div class="players-container">
+            <div class="table-top">
+                <div *ngFor="let player of playersTop" class="player only" (click)="openAdminModal(player)">
+                    <!-- Mostrar las iniciales si el jugador es un espectador -->
+                    <div *ngIf="player.role === 'espectador'" class="player-initials">
+                        <span>{{ getInitials(player.name) }}</span>
+                    </div>
+                    <!-- Mostrar la carta seleccionada si es un jugador -->
+                    <div *ngIf="player.role === 'jugador'" class="card" [class.selected]="player.selectedCard"
+                        [class.revealed]="cardsRevealed">
+                        {{ cardsRevealed ? player.selectedCard : '' }}
+                    </div>
+                    <span class="player-name text">{{ player.name }}</span>
+                </div>
+            </div>
+
+            <div class="table-left">
+                <div *ngFor="let player of playersLeft" class="player only" (click)="openAdminModal(player)">
+                    <div *ngIf="player.role === 'espectador'" class="player-initials">
+                        <span>{{ getInitials(player.name) }}</span>
+                    </div>
+                    <div *ngIf="player.role === 'jugador'" class="card" [class.selected]="player.selectedCard"
+                        [class.revealed]="cardsRevealed">
+                        {{ cardsRevealed ? player.selectedCard : '' }}
+                    </div>
+                    <span class="player-name text">{{ player.name }}</span>
+                </div>
+            </div>
+
+            <div class="neon-shape table">
+                <button *ngIf="isAdminUser() && !cardsRevealed" (click)="revealCards()" class="reveal-cards">
+                    Revelar cartas
+                </button>
+                <button *ngIf="isAdminUser() && cardsRevealed" (click)="restartVoting()" class="reveal-cards">
+                    Nueva votación
+                </button>
+            </div>
+
+            <div class="table-right">
+                <div *ngFor="let player of playersRight" class="player only" (click)="openAdminModal(player)">
+                    <div *ngIf="player.role === 'espectador'" class="player-initials">
+                        <span>{{ getInitials(player.name) }}</span>
+                    </div>
+                    <div *ngIf="player.role === 'jugador'" class="card" [class.selected]="player.selectedCard"
+                        [class.revealed]="cardsRevealed">
+                        {{ cardsRevealed ? player.selectedCard : '' }}
+                    </div>
+                    <span class="player-name text">{{ player.name }}</span>
+                </div>
+            </div>
+
+            <div class="table-bottom">
+                <div *ngFor="let player of playersBottom" class="player only" (click)="openAdminModal(player)">
+                    <div *ngIf="player.role === 'espectador'" class="player-initials">
+                        <span>{{ getInitials(player.name) }}</span>
+                    </div>
+                    <div *ngIf="player.role === 'jugador'" class="card" [class.selected]="player.selectedCard"
+                        [class.revealed]="cardsRevealed">
+                        {{ cardsRevealed ? player.selectedCard : '' }}
+                    </div>
+                    <span class="player-name text">{{ player.name }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-cards-select" *ngIf="!cardsRevealed && !isSpectator">
+            <h5>Elige una carta 👇</h5>
+            <div class="cards-container">
+                <button *ngFor="let card of cards" (click)="selectCard(card)" [class.selected]="isSelected(card)"
+                    class="card">
+                    {{ card }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Sección de cartas reveladas -->
+        <div *ngIf="cardsRevealed" class="results">
+            <div class="selected-cards">
+                <div *ngFor="let card of groupedSelectedCards">
+                    <div class="card">
+                        <span>{{ card.cardValue }}</span>
+                    </div>
+                    <div class="votes text">
+                        {{ card.voteCount }} {{ card.voteCount > 1 ? 'Votos' : 'Voto' }}
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="selectedScoringMode === 'fibonacci' && average !== null" class="average">
+                <span class="text">Promedio: </span>
+                <span class="text average-number">
+                    {{ average | number: '1.1-1' }}
+                </span>
+            </div>
+        </div>
+
+        <div *ngIf="showAdminModal" class="modal">
+            <div class="modal-content">
+                <div class="title-modal">
+                    <h2 class="text">Asignar rol de administrador</h2>
+                    <button class="close" (click)="closeAdminModal()">×</button>
+                </div>
+                <div class="invite-link-container">
+                    <h3 class="text">Asignar rol de administrador a {{ selectedPlayer?.name }}</h3>
+                    <label class="text">
+                        <input type="checkbox" [(ngModel)]="isAdminChecked"
+                            (change)="toggleAdminRole(selectedPlayer)" />
+                        <span class="custom-checkbox"></span>
+                        Dar rol de administrador
+                    </label>
+
+                    <button (click)="closeAdminModal()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

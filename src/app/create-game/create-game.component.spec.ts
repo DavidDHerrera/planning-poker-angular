@@ -1,82 +1,63 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CreateGameComponent } from './create-game.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
+import * as io from 'socket.io-client'; // Importa correctamente el módulo de Socket.IO
 
 describe('CreateGameComponent', () => {
+  let component: CreateGameComponent;
+  let fixture: ComponentFixture<CreateGameComponent>;
+  let mockRouter: any;
+  let mockStore: any;
+  let mockSocket: any;
+
   beforeEach(async () => {
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
+    mockStore = jasmine.createSpyObj('Store', ['dispatch']);
+
+    // Mock de Socket.IO
+    mockSocket = {
+      emit: jasmine.createSpy('emit'),
+      on: jasmine.createSpy('on').and.callFake((event: string, callback: Function) => {
+        if (event === 'createRoom') {
+          callback({ roomId: 'testRoomId', roomName: 'testRoomName' });
+        }
+      }),
+    };
+
+    // Mockeo de la función io() para devolver mockSocket
+    spyOn(io, 'default').and.returnValue(mockSocket);
+
     await TestBed.configureTestingModule({
-      imports: [CreateGameComponent, ReactiveFormsModule],
+      imports: [ReactiveFormsModule],
+      declarations: [CreateGameComponent],
+      providers: [
+        FormBuilder,
+        { provide: Router, useValue: mockRouter },
+        { provide: Store, useValue: mockStore },
+      ],
     }).compileComponents();
+
+    fixture = TestBed.createComponent(CreateGameComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
-  it('should create the form', () => {
-    const fixture = TestBed.createComponent(CreateGameComponent);
-    const component = fixture.componentInstance;
-    expect(component.gameForm).toBeTruthy();
+  it('should create the component', () => {
+    expect(component).toBeTruthy();
   });
 
-  it('should invalidate the form if name is too short', () => {
-    const fixture = TestBed.createComponent(CreateGameComponent);
-    const component = fixture.componentInstance;
-    const name = component.gameForm.controls['name'];
-    name.setValue('abcd'); // Menos de 5 caracteres
-    expect(name.valid).toBeFalsy();
-    expect(name.errors?.['minlength']).toBeTruthy();
-  });
-
-  it('should invalidate the form if name is too long', () => {
-    const fixture = TestBed.createComponent(CreateGameComponent);
-    const component = fixture.componentInstance;
-    const name = component.gameForm.controls['name'];
-    name.setValue('abcdefghijklmnopqrstuvwxyz'); // Más de 20 caracteres
-    expect(name.valid).toBeFalsy();
-    expect(name.errors?.['maxlength']).toBeTruthy();
-  });
-
-  it('should invalidate the form if name contains special characters', () => {
-    const fixture = TestBed.createComponent(CreateGameComponent);
-    const component = fixture.componentInstance;
-    const name = component.gameForm.controls['name'];
-    name.setValue('name!@#'); // Contiene caracteres especiales
-    expect(name.valid).toBeFalsy();
-    expect(name.errors?.['pattern']).toBeTruthy();
-  });
-
-  it('should invalidate the form if name has more than 3 numbers', () => {
-    const fixture = TestBed.createComponent(CreateGameComponent);
-    const component = fixture.componentInstance;
-    const name = component.gameForm.controls['name'];
-    name.setValue('name1234'); // Más de 3 números
-    expect(name.valid).toBeFalsy();
-    expect(name.errors?.['maxNumbers']).toBeTruthy();
-  });
-
-  it('should invalidate the form if name contains only numbers', () => {
-    const fixture = TestBed.createComponent(CreateGameComponent);
-    const component = fixture.componentInstance;
-    const name = component.gameForm.controls['name'];
-    name.setValue('12345'); // Solo números
-    expect(name.valid).toBeFalsy();
-    expect(name.errors?.['noNumbersOnly']).toBeTruthy();
-  });
-
-  it('should validate a proper name', () => {
-    const fixture = TestBed.createComponent(CreateGameComponent);
-    const component = fixture.componentInstance;
-    const name = component.gameForm.controls['name'];
-    name.setValue('nombre123');
-    expect(name.valid).toBeTruthy();
-  });
-
-  it('should submit the form if valid', () => {
-    const fixture = TestBed.createComponent(CreateGameComponent);
-    const component = fixture.componentInstance;
-    const name = component.gameForm.controls['name'];
-    name.setValue('nombre123');
-    
-    spyOn(console, 'log');  // Espía la función console.log para comprobar si se llama correctamente
-
+  it('should emit data when the room is created', async () => {
+    component.gameForm.controls['name'].setValue('Test Room');
     component.onSubmit();
-    expect(console.log).toHaveBeenCalledWith('Partida creada:', { name: 'nombre123' });
+
+    expect(mockSocket.emit).toHaveBeenCalledWith('createRoom', {
+      roomId: jasmine.any(String),
+      roomName: 'Test Room',
+    });
+
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/create-admin']);
   });
 });

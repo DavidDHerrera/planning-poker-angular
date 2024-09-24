@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
+/* Variables existentes */
 $primary-color: #330072;
 $secondary-color: rgba(31, 13, 63, 1.7);
 $white-transparent: rgba(255, 255, 255, 0.1);
@@ -14,18 +15,33 @@ $disabled-color: rgba(255, 255, 255, 0.1);
 $hover-shadow-color: #ffffff;
 $text-color-disabled: #9D9DA199;
 $hover-color-button: rgba(255, 255, 255, 0.4);
+$blue-zodiac: #1F0D3F;
+$radio-button-purple: #6429CD4D;
+$lavender-blue: #BDBDFF;
+$purple-heart: #6429CD;
+$pale-periwinkle: #BDBDFF99;
+$color-mauve: #E4A4FF;
+$color-vivid-violet: #9610FF;
 
+/* Nuevas variables añadidas */
+$card-width: 48px;
+$card-height: 80px;
+$card-small-width: 35px;
+$card-small-height: 60px;
+$card-border-radius: 7px; /* Renombrado para evitar conflicto con $border-radius existente */
+$background-color: $blue-zodiac; /* Usando el valor de $blue-zodiac existente */
+$black: #000000;
 
-// Mixin para el gradiente de fondo
+/* Mixin para el gradiente de fondo */
 @mixin gradient-bg($color1, $color2) {
     background: radial-gradient(50% 50% at 50% 50%, $color1 0%, $color2 100%);
 }
 
-// Mixin para los botones
+/* Mixin para los botones */
 @mixin button-styles($bg-color, $hover-color, $disabled-color) {
     background-color: $bg-color;
     border-radius: 50px;
-    padding: 16px 24px 16px 24px;
+    padding: 16px 24px;
     font-size: 16px;
     cursor: pointer;
     border: none;
@@ -33,7 +49,6 @@ $hover-color-button: rgba(255, 255, 255, 0.4);
     font-weight: 600;
     line-height: 16px;
     font-family: 'Poppins', sans-serif;
-
 
     &:disabled {
         background-color: $disabled-color;
@@ -43,6 +58,32 @@ $hover-color-button: rgba(255, 255, 255, 0.4);
 
     &:hover:not(:disabled) {
         background-color: $bg-color;
+        box-shadow: 0 0 10px $hover-color;
+    }
+}
+
+@mixin input-styles($width) {
+    width: $width;
+    padding: $input-padding;
+    border: 1px solid $border-color;
+    border-radius: 100px;
+    background-color: transparent;
+    color: $input-text-color;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 19.6px;
+    text-align: center;
+    height: 40px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+
+    &:focus {
+        outline: none;
+        border-color: $hover-shadow-color;
+    }
+
+    &:hover {
+        cursor: pointer;
         box-shadow: 0 0 10px $hover-shadow-color;
     }
 }
@@ -58,6 +99,7 @@ app-create-game {
     margin: auto;
 }
 
+
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
@@ -65,5 +107,199 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    @include gradient-bg($primary-color, $secondary-color); // Usando variables para el gradiente
+    @include gradient-bg($primary-color, $secondary-color);
+
+    .player-initials {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: $lavender-blue;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        color: $primary-color;
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .text {
+        font-size: 14px;
+        font-weight: 400;
+        color: $input-text-color;
+    }
+}
+
+.modal {
+    display: flex;
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(10px);
+
+    .modal-content {
+        background-color: $blue-zodiac;
+        border-radius: 25px;
+        width: 550px;
+        max-width: 90%;
+        text-align: center;
+        border: 1px solid $color-vivid-violet;
+
+        .title-modal {
+            display: flex;
+            background-color: $purple-heart;
+            border-radius: 25px 25px 0 0;
+            padding: 16px 23px;
+            align-items: center;
+            justify-content: space-between;
+
+            h2.text {
+                margin: 0;
+                font-weight: 700;
+                font-size: 16px;
+                line-height: 20px;
+            }
+
+            .close {
+                top: 10px;
+                right: 20px;
+                color: $input-text-color;
+                font-size: 20px;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+            }
+        }
+
+        .invite-link-container {
+            display: flex;
+            align-items: center;
+            padding: 34px 23px;
+            border-radius: 8px;
+            flex-direction: column;
+            gap: 24px;
+
+            input {
+                flex: 1;
+                border: 1px solid $radio-button-purple;
+                background-color: transparent;
+                padding: 9px 4px 9px 15px;
+                border-radius: 100px;
+                width: 100%;
+            }
+
+            button {
+                @include button-styles($button-bg-color, $hover-color-button, $disabled-color);
+            }
+        }
+    }
+}
+
+.content-cards-select {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card {
+    width: $card-width;
+    height: $card-height;
+    background-color: transparent;
+    border: 1px solid $border-color;
+    border-radius: $card-border-radius;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $input-text-color;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 16px;
+    transition: transform 0.3s;
+    padding: 10px;
+    box-sizing: border-box;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+    &.selected {
+        background-color: $color-mauve;
+        color: $primary-color;
+    }
+}
+
+.cards-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+
+    &.only {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+h5 {
+    color: $input-text-color;
+    font-size: 21px;
+    line-height: 21px;
+    font-weight: 600;
+}
+
+/* Estilos responsivos para pantallas pequeñas */
+@media (max-width: 600px) {
+    .modal {
+        align-items: flex-start; /* Alinea el modal al inicio vertical */
+        overflow-y: auto; /* Permite hacer scroll si el contenido es largo */
+    }
+
+    .modal-content {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+
+        .title-modal {
+            border-radius: 0;
+            padding: 16px 15px;
+
+            h2.text {
+                font-size: 18px;
+            }
+
+            .close {
+                font-size: 24px;
+                top: 16px;
+                right: 16px;
+            }
+        }
+
+        .invite-link-container {
+            flex: 1;
+            padding: 20px 15px;
+            gap: 16px;
+            justify-content: center;
+
+            input {
+                padding: 12px 15px;
+                font-size: 16px;
+            }
+
+            button {
+                width: 100%;
+                padding: 12px;
+                font-size: 16px;
+            }
+        }
+    }
 }

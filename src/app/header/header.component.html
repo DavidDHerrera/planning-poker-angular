@@ -1,11 +1,11 @@
-<div class="header table-header">
+<div class="header table-header" [ngClass]="{'game-info': showGameTableInfo}">
   <img src="../../assets/images/ficha-de-poker.png" alt="Logo" class="logo">
 
   <!-- Mostrar el nombre de la partida e iniciales del jugador -->
   <ng-container *ngIf="showGameTableInfo; else defaultHeader">
     <h1>{{ gameName }}</h1>
     <div class="header-right">
-      <div>
+      <div class="content-header-options">
         <button class="content-player-initials" (click)="toggleMenu()">
           <div class="player-initials">
             <span>{{ playerInitials }}</span>

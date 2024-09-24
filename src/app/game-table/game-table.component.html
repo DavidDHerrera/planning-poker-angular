@@ -1,17 +1,13 @@
 <body class="content-table">
     <div *ngIf="isAdminUser()" class="scoring-mode-selector">
         <label class="text" for="scoringMode">Modo de puntaje:</label>
-        <select
-          id="scoringMode"
-          [(ngModel)]="selectedScoringMode"
-          (change)="changeScoringMode()"
-          [disabled]="cardsRevealed"
-        >
-          <option *ngFor="let mode of scoringModes" [value]="mode.value">
-            {{ mode.label }}
-          </option>
+        <select id="scoringMode" [(ngModel)]="selectedScoringMode" (change)="changeScoringMode()"
+            [disabled]="cardsRevealed">
+            <option *ngFor="let mode of scoringModes" [value]="mode.value">
+                {{ mode.label }}
+            </option>
         </select>
-      </div>
+    </div>
     <!-- Si el usuario es jugador -->
     <div class="player-cards">
         <div class="players-container">
@@ -82,16 +78,12 @@
         <div class="content-cards-select" *ngIf="!cardsRevealed && !isSpectator">
             <h5>Elige una carta 👇</h5>
             <div class="cards-container">
-              <button
-                *ngFor="let card of cards"
-                (click)="selectCard(card)"
-                [class.selected]="isSelected(card)"
-                class="card"
-              >
-                {{ card }}
-              </button>
+                <button *ngFor="let card of cards" (click)="selectCard(card)" [class.selected]="isSelected(card)"
+                    class="card">
+                    {{ card }}
+                </button>
             </div>
-          </div>
+        </div>
 
         <!-- Sección de cartas reveladas -->
         <div *ngIf="cardsRevealed" class="results">

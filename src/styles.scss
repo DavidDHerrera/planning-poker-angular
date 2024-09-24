@@ -96,7 +96,8 @@ app-root {
 }
 
 app-create-game,
-app-create-admin {
+app-create-admin,
+app-join-room {
     margin: auto;
 }
 
@@ -143,28 +144,38 @@ body {
     align-items: center;
     backdrop-filter: blur(10px);
 
-    .title-modal {
-        display: flex;
-        background-color: $purple-heart;
-        border-radius: 25px 25px 0 0;
-        padding: 16px 23px;
-        align-items: center;
-        justify-content: space-between;
-    }
-
     .modal-content {
-        background-color: $input-text-color;
+        background-color: $blue-zodiac;
         border-radius: 25px;
         width: 550px;
+        max-width: 90%;
         text-align: center;
-        background-color: $blue-zodiac;
         border: 1px solid $color-vivid-violet;
 
-        h2.text {
-            margin: 0;
-            font-weight: 700;
-            font-size: 16px;
-            line-height: 20px;
+        .title-modal {
+            display: flex;
+            background-color: $purple-heart;
+            border-radius: 25px 25px 0 0;
+            padding: 16px 23px;
+            align-items: center;
+            justify-content: space-between;
+
+            h2.text {
+                margin: 0;
+                font-weight: 700;
+                font-size: 16px;
+                line-height: 20px;
+            }
+
+            .close {
+                top: 10px;
+                right: 20px;
+                color: $input-text-color;
+                font-size: 20px;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+            }
         }
 
         .invite-link-container {
@@ -182,22 +193,61 @@ body {
                 padding: 9px 4px 9px 15px;
                 border-radius: 100px;
                 width: 100%;
-                border-radius: 100px;
             }
 
             button {
                 @include button-styles($button-bg-color, $hover-color-button, $disabled-color);
             }
         }
-        
-        .close {
-            top: 10px;
-            right: 20px;
-            color: $input-text-color;
-            font-size: 20px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
+    }
+}
+
+/* Estilos responsivos para pantallas pequeñas */
+@media (max-width: 600px) {
+    .modal {
+        align-items: flex-start; /* Alinea el modal al inicio vertical */
+        overflow-y: auto; /* Permite hacer scroll si el contenido es largo */
+    }
+
+    .modal-content {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+
+        .title-modal {
+            border-radius: 0;
+            padding: 16px 15px;
+
+            h2.text {
+                font-size: 18px;
+            }
+
+            .close {
+                font-size: 24px;
+                top: 16px;
+                right: 16px;
+            }
+        }
+
+        .invite-link-container {
+            flex: 1;
+            padding: 20px 15px;
+            gap: 16px;
+            justify-content: center;
+
+            input {
+                padding: 12px 15px;
+                font-size: 16px;
+            }
+
+            button {
+                width: 100%;
+                padding: 12px;
+                font-size: 16px;
+            }
         }
     }
 }

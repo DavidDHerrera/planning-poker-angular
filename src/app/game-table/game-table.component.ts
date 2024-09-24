@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 
 interface Player {
@@ -65,6 +65,7 @@ export class GameTableComponent implements OnInit, OnDestroy {
   showAdminModal: boolean = false;
   scoringModes: { label: string; value: 'fibonacci' | 'tshirt'; cards: string[] }[] = [];
   selectedScoringMode: 'fibonacci' | 'tshirt' = 'fibonacci'; // Por defecto Fibonacci
+  isMobile: boolean = false; // Nueva propiedad para detectar dispositivos móviles
 
   constructor() {
     this.playerName =
@@ -100,6 +101,9 @@ export class GameTableComponent implements OnInit, OnDestroy {
     this.selectedScoringMode = this.scoringModes[0].value;
     this.cards = this.scoringModes[0].cards;
 
+    // Verificar el tamaño de pantalla al inicializar
+    this.checkScreenSize();
+
     this.socket.emit('joinRoom', {
       playerName: this.playerName,
       role: this.userRole,
@@ -119,6 +123,18 @@ export class GameTableComponent implements OnInit, OnDestroy {
         this.selectedScoringMode = data.scoringMode;
         this.updateCardsBasedOnScoringMode();
       }
+      this.distributePlayers();
+    });
+
+    this.socket.on('playerJoined', (data: { player: Player }) => {
+      this.allPlayers.push(data.player);
+      this.distributePlayers();
+    });
+
+    this.socket.on('playerLeft', (data: { playerName: string }) => {
+      this.allPlayers = this.allPlayers.filter(
+        player => player.name !== data.playerName
+      );
       this.distributePlayers();
     });
 
@@ -167,10 +183,25 @@ export class GameTableComponent implements OnInit, OnDestroy {
       this.updateCardsBasedOnScoringMode();
       this.resetVotingState();
     });
+
+    // Distribuir los jugadores inicialmente
+    this.distributePlayers();
+  }
+
+  @HostListener('window:resize', [])
+  onResize() {
+    this.checkScreenSize();
+    this.distributePlayers();
+  }
+
+  checkScreenSize() {
+    this.isMobile = window.innerWidth <= 768; // Puedes ajustar el punto de quiebre según tus necesidades
   }
 
   ngOnDestroy() {
     this.socket.off('roomDetails');
+    this.socket.off('playerJoined');
+    this.socket.off('playerLeft');
     this.socket.off('roleChanged');
     this.socket.off('changeAdmin');
     this.socket.off('cardSelected');
@@ -218,30 +249,54 @@ export class GameTableComponent implements OnInit, OnDestroy {
 
   distributePlayers() {
     const totalPlayers = this.allPlayers.length;
-    const topPlayersCount = Math.min(Math.floor(totalPlayers / 2), 3);
-    const bottomPlayersCount = Math.min(
-      totalPlayers - topPlayersCount,
-      2
-    );
-    const leftPlayersCount = Math.min(
-      Math.floor((totalPlayers - topPlayersCount - bottomPlayersCount) / 2),
-      1
-    );
-    const rightPlayersCount =
-      totalPlayers - topPlayersCount - bottomPlayersCount - leftPlayersCount;
 
-    this.playersTop = this.allPlayers.slice(0, topPlayersCount);
-    this.playersBottom = this.allPlayers.slice(
-      topPlayersCount,
-      topPlayersCount + bottomPlayersCount
-    );
-    this.playersLeft = this.allPlayers.slice(
-      topPlayersCount + bottomPlayersCount,
-      topPlayersCount + bottomPlayersCount + leftPlayersCount
-    );
-    this.playersRight = this.allPlayers.slice(
-      topPlayersCount + bottomPlayersCount + leftPlayersCount
-    );
+    if (this.isMobile) {
+      // **Lógica para dispositivos móviles**
+      const topPlayersCount = Math.min(totalPlayers, 2);
+      const bottomPlayersCount = Math.min(totalPlayers - topPlayersCount, 2);
+      const sidePlayersCount = totalPlayers - topPlayersCount - bottomPlayersCount;
+      const leftPlayersCount = Math.floor(sidePlayersCount / 2);
+      const rightPlayersCount = sidePlayersCount - leftPlayersCount;
+
+      this.playersTop = this.allPlayers.slice(0, topPlayersCount);
+      this.playersBottom = this.allPlayers.slice(
+        topPlayersCount,
+        topPlayersCount + bottomPlayersCount
+      );
+      this.playersLeft = this.allPlayers.slice(
+        topPlayersCount + bottomPlayersCount,
+        topPlayersCount + bottomPlayersCount + leftPlayersCount
+      );
+      this.playersRight = this.allPlayers.slice(
+        topPlayersCount + bottomPlayersCount + leftPlayersCount
+      );
+    } else {
+      // **Lógica para dispositivos de escritorio**
+      const topPlayersCount = Math.min(Math.floor(totalPlayers / 2), 3);
+      const bottomPlayersCount = Math.min(
+        totalPlayers - topPlayersCount,
+        2
+      );
+      const leftPlayersCount = Math.min(
+        Math.floor((totalPlayers - topPlayersCount - bottomPlayersCount) / 2),
+        1
+      );
+      const rightPlayersCount =
+        totalPlayers - topPlayersCount - bottomPlayersCount - leftPlayersCount;
+
+      this.playersTop = this.allPlayers.slice(0, topPlayersCount);
+      this.playersBottom = this.allPlayers.slice(
+        topPlayersCount,
+        topPlayersCount + bottomPlayersCount
+      );
+      this.playersLeft = this.allPlayers.slice(
+        topPlayersCount + bottomPlayersCount,
+        topPlayersCount + bottomPlayersCount + leftPlayersCount
+      );
+      this.playersRight = this.allPlayers.slice(
+        topPlayersCount + bottomPlayersCount + leftPlayersCount
+      );
+    }
   }
 
   getInitials(name: string): string {
@@ -334,7 +389,7 @@ export class GameTableComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Nuevo método para actualizar las cartas según el modo de puntaje
+  // Método para actualizar las cartas según el modo de puntaje
   updateCardsBasedOnScoringMode() {
     const mode = this.scoringModes.find(
       m => m.value === this.selectedScoringMode

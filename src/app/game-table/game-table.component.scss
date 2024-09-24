@@ -253,7 +253,6 @@ h5 {
         cursor: pointer;
         position: relative;
         padding-left: 35px;
-        /* Espacio para el checkbox personalizado */
 
         input[type='checkbox'] {
             opacity: 0;
@@ -273,7 +272,6 @@ h5 {
             background-color: transparent;
             border: 3px solid $border-color;
             border-radius: 4px;
-            /* Bordes ligeramente redondeados */
             display: inline-block;
             transition: background-color 0.2s ease, border-color 0.2s ease;
 
@@ -316,46 +314,167 @@ h5 {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
-  
+
     .text {
-      margin-right: 10px;
-      font-size: 16px;
-      color: $input-text-color;
-      font-weight: 600;
+        margin-right: 10px;
+        font-size: 16px;
+        color: $input-text-color;
+        font-weight: 600;
     }
-  
+
     select {
-      background-color: transparent;
-      border: 1px solid $border-color;
-      border-radius: 8px;
-      padding: 8px 13px;
-      font-size: 16px;
-      color: $border-color;
-      outline: none;
-      cursor: pointer;
-      position: relative;
-  
-      /* Estilo para la flecha del selector */
-      &::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        right: 15px;
-        width: 0;
-        height: 0;
-        pointer-events: none;
-        border-left: 6px solid transparent;
-        border-right: 6px solid transparent;
-        border-top: 6px solid $input-text-color;
-        transform: translateY(-50%);
-      }
-  
-      /* Estilo para deshabilitado */
-      &:disabled {
-        border-color: $disabled-color;
-        color: $disabled-color;
-        cursor: not-allowed;
-      }
+        background-color: transparent;
+        border: 1px solid $border-color;
+        border-radius: 8px;
+        padding: 8px 13px;
+        font-size: 16px;
+        color: $border-color;
+        outline: none;
+        cursor: pointer;
+        position: relative;
+
+        /* Estilo para la flecha del selector */
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid $input-text-color;
+            transform: translateY(-50%);
+        }
+
+        /* Estilo para deshabilitado */
+        &:disabled {
+            border-color: $disabled-color;
+            color: $disabled-color;
+            cursor: not-allowed;
+        }
     }
-  }
-  
+}
+
+
+/* **NUEVO**: Estilos responsivos para móviles */
+@media (max-width: 768px) {
+    .players-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .table-top,
+        .table-bottom,
+        .table-left,
+        .table-right {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .table-top {
+            order: 1;
+            flex-direction: row;
+        }
+
+        .neon-shape {
+            order: 2;
+            width: 300px;
+            /* Ajusta el tamaño según sea necesario */
+            height: 300px;
+            /* Ajusta el tamaño según sea necesario */
+        }
+
+        .table-bottom {
+            order: 3;
+            flex-direction: row;
+        }
+
+        .table-left,
+        .table-right {
+            order: 4;
+            flex-direction: row;
+            gap: 10px;
+        }
+
+        .neon-shape {
+            width: 203px;
+            height: 329px;
+            border-radius: 103px;
+
+            &::before {
+                width: calc(100% - 30px);
+                /* Ajusta los tamaños relativos */
+                height: calc(100% - 30px);
+                border-radius: 140px;
+                /* Ajusta el radio */
+            }
+
+            &::after {
+                width: calc(100% - 60px);
+                height: calc(100% - 60px);
+                border-radius: 130px;
+                /* Ajusta el radio */
+            }
+
+            button {
+                font-size: 10px;
+                padding: 8px 5px;
+            }
+        }
+    }
+
+    .content-table {
+        height: auto;
+        margin-top: 20px;
+
+        .scoring-mode-selector {
+            margin: 0;
+
+            label.text {
+                font-size: 12px;
+            }
+
+            select {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+        }
+    }
+
+    .content-cards-select {
+        h5 {
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        .cards-container {
+            overflow-x: auto;
+            display: flex;
+            flex-wrap: nowrap;
+            -webkit-overflow-scrolling: touch;
+            gap: 10px;
+            padding-bottom: 10px;
+            width: 300px;
+            justify-content: flex-start;
+        }
+
+        .card {
+            flex: 0 0 auto;
+            width: 51px;
+            height: 80px;
+        }
+    }
+
+    .results {
+        flex-direction: column;
+        gap: 15px;
+        width: auto;
+        margin-top: 20px;
+
+        .average {
+            align-items: center;
+        }
+    }
+}

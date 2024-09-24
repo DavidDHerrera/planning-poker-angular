@@ -17,18 +17,22 @@
         font-size: 21px;
         font-weight: 600;
         color: $input-text-color;
+        text-align: center;
+        width: 33%;
+        text-align: start;
     }
 }
 
 .header.table-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
 
     .header-right {
         display: flex;
         flex-direction: row;
         align-items: center;
         column-gap: 25px;
+        width: 33%;
     }
 
     .header-invite {
@@ -45,6 +49,19 @@
     }
 }
 
+.header.table-header.game-info {
+    justify-content: space-between;
+
+    h1 {
+        text-align: end;
+    }
+
+    .header-right {
+        justify-content: flex-end;
+    }
+
+}
+
 .content-player-initials {
     background: transparent;
     border: none;
@@ -52,27 +69,94 @@
     align-items: center;
     cursor: pointer;
     gap: 15px;
-    
+
     svg {
         color: $input-text-color;
     }
 }
-  .dropdown-menu {
+
+.dropdown-menu {
     position: absolute;
-    background-color: $blue-zodiac;
-    border: 1px solid $hover-shadow-color;
+    background-color: #1F0D3F;
+    border: 1px solid #ffffff;
     padding: 10px;
     z-index: 1;
-    top: 10%;
-    right: 19%;
-  }
-  
-  .spectator-toggle {
+    top: 108%;
+    right: -40%;
+    width: 157px;
+}
+
+.spectator-toggle {
     display: flex;
     align-items: center;
-  }
-  
-  .spectator-toggle input[type="checkbox"] {
+}
+
+.spectator-toggle input[type="checkbox"] {
     margin-right: 10px;
-  }
-  
+}
+
+.content-header-options {
+    position: relative;
+}
+
+/* Estilos responsivos para dispositivos móviles */
+@media (max-width: 768px) {
+    .header {
+        padding: 20px 20px 0;
+        align-items: flex-start;
+        gap: 15px;
+
+        .logo {
+            width: 50px;
+            height: 50px;
+        }
+
+        h1 {
+            font-size: 12px;
+            line-height: 24px;
+        }
+    }
+
+    .header.table-header {
+        align-items: center;
+        justify-content: flex-start;
+
+        .header-right {
+            width: 52%;
+            flex-direction: column;
+            align-items: center;
+            column-gap: 0;
+            row-gap: 8px;
+        }
+
+        .header-invite {
+            width: 100%;
+            text-align: center;
+            padding: 6px;
+            font-size: 12px;
+        }
+    }
+
+    .content-player-initials {
+        gap: 10px;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        margin: 0;
+        padding: 5px;
+    }
+
+    .spectator-toggle {
+        flex-direction: column;
+        align-items: center;
+
+        .switch-text.text {
+            font-size: 12px;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+    }
+}

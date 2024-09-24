@@ -1,0 +1,444 @@
+@import '../../styles.scss';
+
+/* Variables para dimensiones y tamaños */
+$neon-shape-width: 603px;
+$neon-shape-height: 345px;
+$neon-shape-border-radius: 276px;
+$card-width: 48px;
+$card-height: 80px;
+$small-card-width: 35px;
+$small-card-height: 60px;
+$card-border-radius: 7px;
+$player-initials-size: 56px;
+$player-initials-font-size: 21px;
+$label-padding-left: 35px;
+
+/* Estilos para .neon-shape */
+.neon-shape {
+    width: $neon-shape-width;
+    height: $neon-shape-height;
+    border-radius: $neon-shape-border-radius;
+    position: relative;
+    border: 2px solid $purple-heart;
+    box-sizing: border-box;
+    grid-area: table;
+
+    .reveal-cards {
+        @include button-styles($purple-heart, $purple-heart, $disabled-color);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: $input-text-color;
+        cursor: pointer;
+        z-index: 1;
+        padding: 12px 24px;
+    }
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-sizing: border-box;
+        border-radius: $neon-shape-border-radius;
+    }
+
+    &::before {
+        width: $neon-shape-width - 48px;
+        height: $neon-shape-height - 47px;
+        border: 2px solid $pale-periwinkle;
+    }
+
+    &::after {
+        width: $neon-shape-width - 82px;
+        height: $neon-shape-height - 73px;
+        border: 2px solid $purple-heart;
+    }
+
+
+}
+
+/* Contenedor principal */
+.content-table {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+    align-items: center;
+}
+
+/* Información del jugador */
+.player-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 5px;
+}
+
+/* Cartas y jugadores */
+.player-cards {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+
+    .player {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        &.only {
+            .card {
+                width: $small-card-width;
+                height: $small-card-height;
+                cursor: default;
+
+                &:hover {
+                    transform: none;
+                }
+            }
+        }
+
+        .player-initials {
+            width: $player-initials-size;
+            height: $player-initials-size;
+            font-size: $player-initials-font-size;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: $lavender-blue;
+            border-radius: 50%;
+            color: $primary-color;
+            font-weight: bold;
+        }
+    }
+
+    .content-cards-select {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .selected-cards {
+        display: flex;
+        gap: 30px;
+
+        .votes.text {
+            font-size: 16px;
+        }
+    }
+}
+
+/* Contenedor de jugadores en la mesa */
+.players-container {
+    display: inline-grid;
+    grid-template-areas:
+        'left top right'
+        'left table right'
+        'left bottom right';
+    grid-template-columns: 10.4rem 1fr 10.4rem;
+    grid-template-rows: auto 1fr auto;
+    grid-gap: 0.8rem;
+    margin: 0 auto;
+    min-height: 200px;
+    width: auto;
+
+    .table-top,
+    .table-bottom {
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+    }
+
+    .table-top {
+        align-items: stretch;
+        grid-area: top;
+    }
+
+    .table-bottom {
+        align-items: center;
+        grid-area: bottom;
+    }
+
+    .table-left,
+    .table-right {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .table-left {
+        grid-area: left;
+    }
+
+    .table-right {
+        grid-area: right;
+    }
+}
+
+/* Resultados de las votaciones */
+.results {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    gap: 109px;
+    width: 500px;
+    justify-content: flex-end;
+
+    .average {
+        display: flex;
+        flex-direction: column;
+
+        .average-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: $input-text-color;
+        }
+    }
+}
+
+.modal {
+
+    /* Estilos para el label y el checkbox personalizado */
+    label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        position: relative;
+        padding-left: 35px;
+
+        input[type='checkbox'] {
+            opacity: 0;
+            position: absolute;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .custom-checkbox {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 21px;
+            height: 21px;
+            background-color: transparent;
+            border: 3px solid $border-color;
+            border-radius: 4px;
+            display: inline-block;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+
+            &::after {
+                content: '';
+                position: absolute;
+                display: none;
+                left: 5px;
+                top: 1px;
+                width: 5px;
+                height: 10px;
+                border: solid $border-color;
+                border-width: 0 3px 3px 0;
+                transform: rotate(45deg);
+            }
+        }
+
+        input[type='checkbox']:checked+.custom-checkbox {
+            background-color: $radio-button-purple;
+            border-color: $border-color;
+
+            &::after {
+                display: block;
+                border-color: $button-bg-color;
+            }
+        }
+
+        /* Estilo para el texto del label */
+        .text {
+            margin-left: 8px;
+            color: $input-text-color;
+            font-size: 16px;
+            font-weight: 500;
+        }
+    }
+}
+
+/* Estilos para el contenedor del selector de modo de puntaje */
+.scoring-mode-selector {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .text {
+        margin-right: 10px;
+        font-size: 16px;
+        color: $input-text-color;
+        font-weight: 600;
+    }
+
+    select {
+        background-color: transparent;
+        border: 1px solid $border-color;
+        border-radius: 8px;
+        padding: 8px 13px;
+        font-size: 16px;
+        color: $border-color;
+        outline: none;
+        cursor: pointer;
+        position: relative;
+
+        /* Estilo para la flecha del selector */
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid $input-text-color;
+            transform: translateY(-50%);
+        }
+
+        /* Estilo para deshabilitado */
+        &:disabled {
+            border-color: $disabled-color;
+            color: $disabled-color;
+            cursor: not-allowed;
+        }
+    }
+}
+
+
+/* **NUEVO**: Estilos responsivos para móviles */
+@media (max-width: 768px) {
+    .players-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .table-top,
+        .table-bottom,
+        .table-left,
+        .table-right {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .table-top {
+            order: 1;
+            flex-direction: row;
+        }
+
+        .neon-shape {
+            order: 2;
+            width: 300px;
+            /* Ajusta el tamaño según sea necesario */
+            height: 300px;
+            /* Ajusta el tamaño según sea necesario */
+        }
+
+        .table-bottom {
+            order: 3;
+            flex-direction: row;
+        }
+
+        .table-left,
+        .table-right {
+            order: 4;
+            flex-direction: row;
+            gap: 10px;
+        }
+
+        .neon-shape {
+            width: 203px;
+            height: 329px;
+            border-radius: 103px;
+
+            &::before {
+                width: calc(100% - 30px);
+                /* Ajusta los tamaños relativos */
+                height: calc(100% - 30px);
+                border-radius: 140px;
+                /* Ajusta el radio */
+            }
+
+            &::after {
+                width: calc(100% - 60px);
+                height: calc(100% - 60px);
+                border-radius: 130px;
+                /* Ajusta el radio */
+            }
+
+            button {
+                font-size: 10px;
+                padding: 8px 5px;
+            }
+        }
+    }
+
+    .content-table {
+        height: auto;
+        margin-top: 20px;
+
+        .scoring-mode-selector {
+            margin: 0;
+
+            label.text {
+                font-size: 12px;
+            }
+
+            select {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+        }
+
+        .player.only .player-initials {
+            width: 36px;
+            height: 36px;
+
+            span {
+                font-size: 14px;
+            }
+        }
+    }
+
+    .content-cards-select {
+        h5 {
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        .cards-container {
+            overflow-x: auto;
+            display: flex;
+            flex-wrap: nowrap;
+            -webkit-overflow-scrolling: touch;
+            gap: 10px;
+            padding-bottom: 10px;
+            width: 300px;
+            justify-content: flex-start;
+        }
+
+        .card {
+            flex: 0 0 auto;
+            width: 51px;
+            height: 80px;
+        }
+    }
+
+    .results {
+        flex-direction: column;
+        gap: 15px;
+        width: auto;
+        margin-top: 20px;
+
+        .average {
+            align-items: center;
+        }
+    }
+}
